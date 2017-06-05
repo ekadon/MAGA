@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'kotlin-android'
 
 android {
@@ -23,10 +23,18 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    compile project(':domain')
+    compile project(':data')
+
+    def appDependencies = rootProject.ext.appDependencies
+    def appTestDependencies = rootProject.ext.appTestDependencies
+    def appAndroidTestDependencies = rootProject.ext.appAndroidTestDependencies
+
+    compile appDependencies.kotlin
+    compile appDependencies.supportLib
+
+    testCompile appTestDependencies.junit
+    androidTestCompile(appAndroidTestDependencies.espressoCore, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
 }

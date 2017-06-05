@@ -1,0 +1,42 @@
+ext {
+    /**
+     * Gradle plugins
+     */
+    androidPluginVersion = '3.0.0-alpha3'
+    kotlinVersion = '1.1.2-4'
+    paperWorkVersion = '1.2.7'
+
+    gradlePlugins = [
+            android  : "com.android.tools.build:gradle:$androidPluginVersion",
+            kotlin   : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
+            paperWork: "hu.supercluster:paperwork-plugin:$paperWorkVersion"
+    ]
+
+    /**
+     * Main dependencies for app module
+     */
+    supportLibVersion = '25.3.1'
+
+    appDependencies = [
+            kotlin: "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
+            supportLib: "com.android.support:appcompat-v7:$supportLibVersion"
+    ]
+
+    /**
+     * Unit test dependencies for app module
+     */
+    junitVersion = '4.12'
+
+    appTestDependencies = [
+        junit: "junit:junit:$junitVersion"
+    ]
+
+    /**
+     * UI test dependencies for app module
+     */
+    espressoVersion = '2.2.2'
+
+    appAndroidTestDependencies = [
+            espressoCore: "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    ]
+}
