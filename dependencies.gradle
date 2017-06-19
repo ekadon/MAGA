@@ -2,7 +2,7 @@ ext {
     /**
      * Gradle plugins
      */
-    androidPluginVersion = '3.0.0-alpha3'
+    androidPluginVersion = '3.0.0-alpha4'
     kotlinVersion = '1.1.2-4'
     paperWorkVersion = '1.2.7'
 
