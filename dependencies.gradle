@@ -2,7 +2,7 @@ ext {
     /**
      * Gradle plugins
      */
-    androidPluginVersion = '3.0.0-alpha4'
+    androidPluginVersion = '3.0.0-alpha8'
     kotlinVersion = '1.1.2-4'
     paperWorkVersion = '1.2.7'
 
@@ -15,11 +15,14 @@ ext {
     /**
      * Main dependencies for app module
      */
-    supportLibVersion = '25.3.1'
+    supportLibVersion = '26.0.0'
+    glideVersion = '3.8.0'
 
     appDependencies = [
-            kotlin: "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
-            supportLib: "com.android.support:appcompat-v7:$supportLibVersion"
+            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
+            supportLib: "com.android.support:appcompat-v7:$supportLibVersion",
+            leanback  : "com.android.support:leanback-v17:$supportLibVersion",
+            glide     : "com.github.bumptech.glide:glide:$glideVersion"
     ]
 
     /**
@@ -28,15 +31,23 @@ ext {
     junitVersion = '4.12'
 
     appTestDependencies = [
-        junit: "junit:junit:$junitVersion"
+            junit: "junit:junit:$junitVersion"
     ]
 
     /**
      * UI test dependencies for app module
      */
-    espressoVersion = '2.2.2'
+    runnerVersion = '1.0.0'
+    rulesVersion = '1.0.0'
+    espressoVersion = '3.0.0'
 
     appAndroidTestDependencies = [
-            espressoCore: "com.android.support.test.espresso:espresso-core:$espressoVersion"
+            testRunner             : "com.android.support.test:runner:$runnerVersion",
+            rules                  : "com.android.support.test:rules:$rulesVersion",
+            espressoCore           : "com.android.support.test.espresso:espresso-core:$espressoVersion",
+            espressoContrib        : "com.android.support.test.espresso:espresso-contrib:$espressoVersion",
+            espressoIntents        : "com.android.support.test.espresso:espresso-intents:$espressoVersion",
+            espressoAccessibility  : "com.android.support.test.espresso:espresso-accessibility:$espressoVersion",
+            espressoIdlingResources: "com.android.support.test.espresso:espresso-idling-resource:$espressoVersion"
     ]
 }
