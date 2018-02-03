@@ -1,16 +1,18 @@
 apply plugin: 'com.android.application'
 apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 27
     defaultConfig {
         applicationId "oleg.osipenko.maga"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -21,9 +23,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':domain')
-    implementation project(':data')
+    implementation project(path:':data', configuration: 'default')
 
     def appDependencies = rootProject.ext.appDependencies
     def appTestDependencies = rootProject.ext.appTestDependencies
@@ -31,16 +33,19 @@ dependencies {
 
     implementation appDependencies.kotlin
     implementation appDependencies.supportLib
+    implementation appDependencies.glide
+    kapt appDependencies.glideApt
 
     testImplementation appTestDependencies.junit
+    testImplementation appTestDependencies.mockito
+    testImplementation appTestDependencies.robolectric
 
     androidTestImplementation appAndroidTestDependencies.testRunner
     androidTestImplementation appAndroidTestDependencies.rules
-
     androidTestImplementation(appAndroidTestDependencies.espressoCore, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestImplementation (appAndroidTestDependencies.espressoContrib){
+    androidTestImplementation(appAndroidTestDependencies.espressoContrib) {
         exclude module: 'hamcrest-core'
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
@@ -51,8 +56,5 @@ dependencies {
     }
     androidTestImplementation appAndroidTestDependencies.espressoIntents
     androidTestImplementation appAndroidTestDependencies.espressoAccessibility
-
-    // The following Espresso dependency can be either "implementation"
-    // or "androidTestImplementation", depending on your app's implementation
-    implementation appAndroidTestDependencies.espressoIdlingResources
+    androidTestImplementation appAndroidTestDependencies.mockito
 }

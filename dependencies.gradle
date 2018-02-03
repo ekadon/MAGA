@@ -2,8 +2,8 @@ ext {
     /**
      * Gradle plugins
      */
-    androidPluginVersion = '3.0.0-alpha8'
-    kotlinVersion = '1.1.2-4'
+    androidPluginVersion = '3.0.1'
+    kotlinVersion = '1.2.10'
     paperWorkVersion = '1.2.7'
 
     gradlePlugins = [
@@ -15,31 +15,36 @@ ext {
     /**
      * Main dependencies for app module
      */
-    supportLibVersion = '26.0.0'
-    glideVersion = '3.8.0'
+    supportLibVersion = '26.1.0'
+    glideVersion = '4.6.1'
 
     appDependencies = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
             supportLib: "com.android.support:appcompat-v7:$supportLibVersion",
             leanback  : "com.android.support:leanback-v17:$supportLibVersion",
-            glide     : "com.github.bumptech.glide:glide:$glideVersion"
+            glide     : "com.github.bumptech.glide:glide:$glideVersion",
+            glideApt  : "com.github.bumptech.glide:compiler:$glideVersion"
     ]
 
     /**
      * Unit test dependencies for app module
      */
     junitVersion = '4.12'
+    mockitoVersion = '2.12.0'
+    robolectricVersion = '3.4.2'
 
     appTestDependencies = [
-            junit: "junit:junit:$junitVersion"
+            junit      : "junit:junit:$junitVersion",
+            mockito    : "org.mockito:mockito-core:$mockitoVersion",
+            robolectric: "org.robolectric:robolectric:$robolectricVersion"
     ]
 
     /**
      * UI test dependencies for app module
      */
-    runnerVersion = '1.0.0'
-    rulesVersion = '1.0.0'
-    espressoVersion = '3.0.0'
+    runnerVersion = '1.0.1'
+    rulesVersion = '1.0.1'
+    espressoVersion = '3.0.1'
 
     appAndroidTestDependencies = [
             testRunner             : "com.android.support.test:runner:$runnerVersion",
@@ -48,6 +53,16 @@ ext {
             espressoContrib        : "com.android.support.test.espresso:espresso-contrib:$espressoVersion",
             espressoIntents        : "com.android.support.test.espresso:espresso-intents:$espressoVersion",
             espressoAccessibility  : "com.android.support.test.espresso:espresso-accessibility:$espressoVersion",
-            espressoIdlingResources: "com.android.support.test.espresso:espresso-idling-resource:$espressoVersion"
+            espressoIdlingResources: "com.android.support.test.espresso:espresso-idling-resource:$espressoVersion",
+            mockito                : "org.mockito:mockito-core:$mockitoVersion"
+    ]
+
+    dataDependencies = [
+
+    ]
+
+    dataTestDependencies = [
+            junit  : "junit:junit:$junitVersion",
+            mockito: "org.mockito:mockito-core:$mockitoVersion"
     ]
 }
