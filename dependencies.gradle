@@ -17,13 +17,14 @@ ext {
      */
     supportLibVersion = '26.1.0'
     glideVersion = '4.6.1'
+    rxVersion = '2.1.7'
 
     appDependencies = [
-            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
-            supportLib: "com.android.support:appcompat-v7:$supportLibVersion",
-            leanback  : "com.android.support:leanback-v17:$supportLibVersion",
-            glide     : "com.github.bumptech.glide:glide:$glideVersion",
-            glideApt  : "com.github.bumptech.glide:compiler:$glideVersion"
+            kotlin       : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
+            supportLib   : "com.android.support:appcompat-v7:$supportLibVersion",
+            leanback     : "com.android.support:leanback-v17:$supportLibVersion",
+            glide        : "com.github.bumptech.glide:glide:$glideVersion",
+            glideCompiler: "com.github.bumptech.glide:compiler:$glideVersion"
     ]
 
     /**
@@ -57,8 +58,23 @@ ext {
             mockito                : "org.mockito:mockito-core:$mockitoVersion"
     ]
 
-    dataDependencies = [
+    loganVersion = '1.3.7'
+    loganCompilerVersion = '1.3.6'
+    retrofitVersion = '2.3.0'
+    loganRetrofitVersion = '1.4.1'
+    roomVersion = '1.0.0'
 
+    dataDependencies = [
+            rxJava       : "io.reactivex.rxjava2:rxjava:$rxVersion",
+            logan        : "com.bluelinelabs:logansquare:1.3.6",
+            loganCompiler: "com.bluelinelabs:logansquare-compiler:$loganCompilerVersion",
+            retrofit     : "com.squareup.retrofit2:retrofit:$retrofitVersion",
+            retrofitRx   : "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion",
+            loganRetrofit: "com.github.aurae.retrofit2:converter-logansquare:$loganRetrofitVersion",
+            room         : "android.arch.persistence.room:runtime:$roomVersion",
+            roomCompiler : "android.arch.persistence.room:compiler:$roomVersion",
+            roomRx       : "android.arch.persistence.room:rxjava2:$roomVersion",
+            androidGroup : "com.android.support"
     ]
 
     dataTestDependencies = [

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 27
@@ -24,6 +25,21 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     def dataDependencies = rootProject.ext.dataDependencies
+
+    implementation dataDependencies.rxJava
+    implementation dataDependencies.logan
+    kapt dataDependencies.loganCompiler
+    implementation dataDependencies.retrofit
+    implementation dataDependencies.retrofitRx
+    implementation dataDependencies.loganRetrofit
+    implementation (dataDependencies.room) {
+        exclude group: dataDependencies.androidGroup
+    }
+    kapt dataDependencies.roomCompiler
+    implementation (dataDependencies.roomRx) {
+        exclude group: dataDependencies.androidGroup
+    }
+
     def dataTestDependencies = rootProject.ext.dataTestDependencies
 
     testImplementation dataTestDependencies.junit

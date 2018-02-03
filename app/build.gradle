@@ -34,7 +34,7 @@ dependencies {
     implementation appDependencies.kotlin
     implementation appDependencies.supportLib
     implementation appDependencies.glide
-    kapt appDependencies.glideApt
+    kapt appDependencies.glideCompiler
 
     testImplementation appTestDependencies.junit
     testImplementation appTestDependencies.mockito
