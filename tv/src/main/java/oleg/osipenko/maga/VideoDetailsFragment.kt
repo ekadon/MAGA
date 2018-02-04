@@ -17,6 +17,7 @@ package oleg.osipenko.maga
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v17.leanback.app.DetailsFragment
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController
@@ -26,9 +27,9 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
-import com.bumptech.glide.request.animation.GlideAnimation
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import java.util.*
 
 /**
@@ -68,14 +69,12 @@ class VideoDetailsFragment : DetailsFragment() {
     private fun initializeBackground(movie: Movie?) {
         mDetailsBackground.enableParallax()
         Glide.with(activity)
-                .load(movie?.backgroundImageUrl)
                 .asBitmap()
-                .centerCrop()
-                .error(R.drawable.default_background)
+                .load(movie?.backgroundImageUrl)
+                .apply(RequestOptions().centerCrop().error(R.drawable.default_background))
                 .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
-                    override fun onResourceReady(bitmap: Bitmap,
-                                                 glideAnimation: GlideAnimation<in Bitmap>) {
-                        mDetailsBackground.coverBitmap = bitmap
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        mDetailsBackground.coverBitmap = resource
                         mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size())
                     }
                 })
@@ -89,11 +88,9 @@ class VideoDetailsFragment : DetailsFragment() {
         val height = convertDpToPixel(activity, DETAIL_THUMB_HEIGHT)
         Glide.with(activity)
                 .load(mSelectedMovie?.cardImageUrl)
-                .centerCrop()
-                .error(R.drawable.default_background)
-                .into<SimpleTarget<GlideDrawable>>(object : SimpleTarget<GlideDrawable>(width, height) {
-                    override fun onResourceReady(resource: GlideDrawable,
-                                                 glideAnimation: GlideAnimation<in GlideDrawable>) {
+                .apply(RequestOptions().centerCrop().error(R.drawable.default_background))
+                .into<SimpleTarget<Drawable>>(object : SimpleTarget<Drawable>(width, height) {
+                    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
                         Log.d(TAG, "details overview card image url ready: " + resource)
                         row.imageDrawable = resource
                         mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size())

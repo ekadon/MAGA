@@ -29,15 +29,15 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         super.onCreate(savedInstanceState)
 
         val (_, title, description, _, _, videoUrl) = activity
-                .intent.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+                ?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
 
         val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
 
         mMediaPlayerGlue = MediaPlayerGlue(activity)
         mMediaPlayerGlue.host = glueHost
         mMediaPlayerGlue.setMode(MediaPlayerGlue.NO_REPEAT)
-        mMediaPlayerGlue.setPlayerCallback(object : PlaybackGlue.PlayerCallback() {
-            override fun onReadyForPlayback() {
+        mMediaPlayerGlue.addPlayerCallback(object : PlaybackGlue.PlayerCallback() {
+            override fun onPreparedStateChanged(glue: PlaybackGlue?) {
                 mMediaPlayerGlue.play()
             }
         })

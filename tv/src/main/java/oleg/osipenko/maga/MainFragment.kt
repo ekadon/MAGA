@@ -31,9 +31,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
-import com.bumptech.glide.request.animation.GlideAnimation
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import java.util.*
 
 /**
@@ -44,7 +44,6 @@ class MainFragment : BrowseFragment() {
     private val mHandler = Handler()
     private lateinit var mRowsAdapter: ArrayObjectAdapter
     private lateinit var mBackgroundManager: BackgroundManager
-    private lateinit var mDefaultBackground: Drawable
     private lateinit var mMetrics: DisplayMetrics
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
@@ -72,7 +71,6 @@ class MainFragment : BrowseFragment() {
 
         mBackgroundManager = BackgroundManager.getInstance(activity)
         mBackgroundManager.attach(activity.window)
-        mDefaultBackground = ContextCompat.getDrawable(activity, R.drawable.default_background)
         mMetrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(mMetrics)
     }
@@ -169,12 +167,10 @@ class MainFragment : BrowseFragment() {
         val height = mMetrics.heightPixels
         Glide.with(activity)
                 .load(uri)
-                .centerCrop()
-                .error(mDefaultBackground)
-                .into<SimpleTarget<GlideDrawable>>(
-                        object : SimpleTarget<GlideDrawable>(width, height) {
-                            override fun onResourceReady(resource: GlideDrawable,
-                                                         glideAnimation: GlideAnimation<in GlideDrawable>) {
+                .apply(RequestOptions().centerCrop().error(R.drawable.default_background))
+                .into<SimpleTarget<Drawable>>(
+                        object : SimpleTarget<Drawable>(width, height) {
+                            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
                                 mBackgroundManager.drawable = resource
                             }
                         })
