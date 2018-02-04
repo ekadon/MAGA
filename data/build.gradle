@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
@@ -10,6 +10,11 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -19,6 +24,9 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -26,17 +34,18 @@ dependencies {
 
     def dataDependencies = rootProject.ext.dataDependencies
 
+    implementation dataDependencies.kotlin
     implementation dataDependencies.rxJava
     implementation dataDependencies.logan
     kapt dataDependencies.loganCompiler
     implementation dataDependencies.retrofit
     implementation dataDependencies.retrofitRx
     implementation dataDependencies.loganRetrofit
-    implementation (dataDependencies.room) {
+    implementation(dataDependencies.room) {
         exclude group: dataDependencies.androidGroup
     }
     kapt dataDependencies.roomCompiler
-    implementation (dataDependencies.roomRx) {
+    implementation(dataDependencies.roomRx) {
         exclude group: dataDependencies.androidGroup
     }
 
