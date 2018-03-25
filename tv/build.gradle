@@ -26,9 +26,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    def appDependencies = rootProject.ext.appDependencies
-    implementation appDependencies.kotlin
-    implementation appDependencies.supportLib
-    implementation appDependencies.leanback
-    implementation appDependencies.glide
+    implementation CoreDependencies.kotlin
+    implementation UiDependencies.appCompat
+    implementation TvDependencies.leanback
+    implementation UiDependencies.glide
 }

@@ -32,25 +32,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    def dataDependencies = rootProject.ext.dataDependencies
+    def androidGroup = 'com.android.support'
 
-    implementation dataDependencies.kotlin
-    implementation dataDependencies.rxJava
-    implementation dataDependencies.logan
-    kapt dataDependencies.loganCompiler
-    implementation dataDependencies.retrofit
-    implementation dataDependencies.retrofitRx
-    implementation dataDependencies.loganRetrofit
-    implementation(dataDependencies.room) {
-        exclude group: dataDependencies.androidGroup
-    }
-    kapt dataDependencies.roomCompiler
-    implementation(dataDependencies.roomRx) {
-        exclude group: dataDependencies.androidGroup
-    }
-
-    def dataTestDependencies = rootProject.ext.dataTestDependencies
-
-    testImplementation dataTestDependencies.junit
-    testImplementation dataTestDependencies.mockito
+    implementation CoreDependencies.kotlin
+    implementation DataDependencies.retrofit
+    implementation DataDependencies.retrofitGson
+    implementation(DataDependencies.room) { exclude group: androidGroup }
+    kapt DataDependencies.roomCompiler
+    implementation DataDependencies.logger
 }

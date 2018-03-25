@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'hu.supercluster.paperwork'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -32,34 +31,8 @@ dependencies {
     implementation project(':domain')
     implementation project(':data')
 
-    def appDependencies = rootProject.ext.appDependencies
-    def appTestDependencies = rootProject.ext.appTestDependencies
-    def appAndroidTestDependencies = rootProject.ext.appAndroidTestDependencies
-
-    implementation appDependencies.kotlin
-    implementation appDependencies.supportLib
-    implementation appDependencies.glide
-    kapt appDependencies.glideCompiler
-
-    testImplementation appTestDependencies.junit
-    testImplementation appTestDependencies.mockito
-    testImplementation appTestDependencies.robolectric
-
-    androidTestImplementation appAndroidTestDependencies.testRunner
-    androidTestImplementation appAndroidTestDependencies.rules
-    androidTestImplementation(appAndroidTestDependencies.espressoCore, {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    androidTestImplementation(appAndroidTestDependencies.espressoContrib) {
-        exclude module: 'hamcrest-core'
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
-        exclude module: 'support-v13'
-        exclude module: 'recyclerview-v7'
-        exclude module: 'design'
-        exclude module: 'appcompat-v7'
-    }
-    androidTestImplementation appAndroidTestDependencies.espressoIntents
-    androidTestImplementation appAndroidTestDependencies.espressoAccessibility
-    androidTestImplementation appAndroidTestDependencies.mockito
+    implementation CoreDependencies.kotlin
+    implementation UiDependencies.appCompat
+    implementation UiDependencies.glide
+    kapt UiDependencies.glideCompiler
 }
