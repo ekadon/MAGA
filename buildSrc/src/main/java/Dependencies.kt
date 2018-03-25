@@ -1,22 +1,23 @@
 object Versions {
     val androidPlugin = "3.0.1"
-    val kotlin = "1.2.30"
+    val kotlin = "1.2.31"
     val appCompat = "26.1.0"
     val glide = "4.6.1"
+    val retrofit = "2.3.0"
+    val room = "1.0.0"
+    val constraintLayout = "1.0.2"
+    val logger = "3.9.0"
+    val archComponents = "1.1.1"
+    val dagger = "2.14.1"
+    val paging = "1.0.0-alpha7"
+
     val junit = "4.12"
+    val mockitoKotlin = "1.5.0"
     val mockito = "2.12.0"
     val robolectric = "3.4.2"
     val runner = "1.0.1"
     val rules = "1.0.1"
     val espresso = "3.0.1"
-    val loganCompiler = "1.3.6"
-    val retrofit = "2.3.0"
-    val room = "1.0.0"
-    val constraintLayout = "1.0.2"
-    val logger = "3.9.0"
-    val archComponents = "1.1.0"
-    val dagger = "2.14.1"
-    val mockitoKotlin = "1.5.0"
 }
 
 object GradlePlugins {
@@ -53,4 +54,11 @@ object DataDependencies {
     val room = "android.arch.persistence.room:runtime:${Versions.room}"
     val roomCompiler = "android.arch.persistence.room:compiler:${Versions.room}"
     val logger = "com.squareup.okhttp3:logging-interceptor:${Versions.logger}"
+    val paging = "android.arch.paging:runtime:${Versions.paging}"
+}
+
+object ArchitectureComponents {
+    val lifecycle = "android.arch.lifecycle:extensions:${Versions.archComponents}"
+    val lifeCycleCompiler = "android.arch.lifecycle:compiler:${Versions.archComponents}"
+    val liveData = "android.arch.lifecycle:livedata:${Versions.archComponents}"
 }
