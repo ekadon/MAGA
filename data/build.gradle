@@ -31,13 +31,18 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':domain')
 
     def androidGroup = 'com.android.support'
 
     implementation CoreDependencies.kotlin
     implementation DataDependencies.retrofit
     implementation DataDependencies.retrofitGson
+    implementation DataDependencies.logger
+
+    implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
+    kapt ArchitectureComponents.lifeCycleCompiler
     implementation(DataDependencies.room) { exclude group: androidGroup }
     kapt DataDependencies.roomCompiler
-    implementation DataDependencies.logger
+    implementation(DataDependencies.paging) { exclude group: androidGroup }
 }

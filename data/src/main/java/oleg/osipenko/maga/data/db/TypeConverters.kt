@@ -4,19 +4,38 @@ import android.arch.persistence.room.TypeConverter
 
 class TypeConverters {
 
-    @TypeConverter fun toString(ints: List<Int>): String {
-        val sb = StringBuilder()
-        for ((index, i) in ints.withIndex()) {
-            sb.append(i)
-            if (index < ints.size - 1) sb.append(",")
-        }
-        return sb.toString()
+    companion object {
+        const val DELIMITER = ","
     }
 
-    @TypeConverter fun fromString(input: String): List<Int> {
-        return input.asIterable()
-                .filter { it != ',' }
-                .map { it.toInt() }
-                .toList()
+    @TypeConverter
+    fun intListToString(ints: List<Int>): String {
+        return appendToString(ints, DELIMITER)
+    }
+
+    @TypeConverter
+    fun intListFromString(input: String): List<Int> {
+        return input.split(DELIMITER).map { it.toInt() }.toList()
+    }
+
+    @TypeConverter
+    fun stringListToString(strings: List<String>): String {
+        return appendToString(strings, DELIMITER)
+    }
+
+    @TypeConverter
+    fun stringListFromString(input: String): List<String> {
+        return input.split(DELIMITER).toList()
+    }
+
+    private fun appendToString(values: List<Any>, delimiter: String): String {
+        val sb = StringBuilder()
+        with(sb) {
+            for ((index, i) in values.withIndex()) {
+                append(i)
+                if (index < values.size - 1) append(delimiter)
+            }
+        }
+        return sb.toString()
     }
 }
