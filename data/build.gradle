@@ -42,7 +42,7 @@ dependencies {
 
     implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
     kapt ArchitectureComponents.lifeCycleCompiler
-    implementation(DataDependencies.room) { exclude group: androidGroup }
+    implementation DataDependencies.room
     kapt DataDependencies.roomCompiler
     implementation(DataDependencies.paging) { exclude group: androidGroup }
 }

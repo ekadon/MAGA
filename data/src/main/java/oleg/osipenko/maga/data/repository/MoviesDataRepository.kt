@@ -10,6 +10,7 @@ import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.entities.MovieGenreRecord
 import oleg.osipenko.maga.data.entities.NowPlaying
 import oleg.osipenko.maga.data.network.TMDBApi
+import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,6 +23,24 @@ class MoviesDataRepository(
         private val db: MoviesDb,
         private val api: TMDBApi,
         private val ioExecutor: Executor) : MoviesRepository {
+
+    init {
+        api.getGenres(TMDBApi.KEY, Locale.getDefault().language).enqueue(object : Callback<GenresResponse> {
+            override fun onFailure(call: Call<GenresResponse>?, t: Throwable?) {
+
+            }
+
+            override fun onResponse(call: Call<GenresResponse>?, response: Response<GenresResponse>?) {
+                if (isLoaded(response)) {
+                    response?.body()?.genres?.let {
+                        ioExecutor.execute {
+                            db.genresDao().insertGenres(it)
+                        }
+                    }
+                }
+            }
+        })
+    }
 
     override fun nowPlaying(): MoviesDataState<List<Movie>> {
         val networkState = MutableLiveData<NetworkState>()
@@ -46,7 +65,8 @@ class MoviesDataRepository(
         })
 
         return MoviesDataState(
-                Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map {
+                Transformations.map(db.nowPlayingDao().nowPlaying) {
+                    it?.map {
                         Movie(
                                 it.posterPath ?: "",
                                 it.adult ?: false,
@@ -62,7 +82,8 @@ class MoviesDataRepository(
                                 it.voteCount ?: Int.MIN_VALUE,
                                 it.video ?: "",
                                 it.voteAverage ?: Float.MIN_VALUE
-                        )} ?: emptyList()
+                        )
+                    } ?: emptyList()
                 }, networkState)
     }
 
@@ -83,10 +104,12 @@ class MoviesDataRepository(
 
             val nowPlaying = it.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
-            db.runInTransaction {
-                db.moviesDao().insertMovies(it)
-                db.movieGenresDao().insertMovieGenres(movieGenres)
-                db.nowPlayingDao().saveNowPlaying(nowPlaying)
+            ioExecutor.execute {
+                db.runInTransaction {
+                    db.moviesDao().insertMovies(it)
+                    db.nowPlayingDao().saveNowPlaying(nowPlaying)
+                    db.movieGenresDao().insertMovieGenres(movieGenres)
+                }
             }
         }
     }

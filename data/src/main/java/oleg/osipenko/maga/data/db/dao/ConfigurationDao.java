@@ -17,6 +17,6 @@ public interface ConfigurationDao {
 
     @Insert(onConflict = REPLACE) void insertConfiguration(ConfigurationRecord configuration);
 
-    @Query("SELECT * FROM configuration")
+    @Query("SELECT * FROM config")
     LiveData<ConfigurationRecord> getConfiguration();
 }

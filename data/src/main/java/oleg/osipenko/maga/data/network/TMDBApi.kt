@@ -3,6 +3,7 @@ package oleg.osipenko.maga.data.network
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import oleg.osipenko.maga.data.network.dto.ApiConfigurationResponse
+import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -70,4 +71,13 @@ interface TMDBApi {
             @Query(LANG) language: String,
             @Query(PAGE) page: Int,
             @Query(REGION) region: String): Call<MoviesResponse>
+
+    /**
+     * Retrieves the list of genres
+     * https://developers.themoviedb.org/3/genres/get-movie-list
+     */
+    @GET("/3/genre/movie/list")
+    fun getGenres(@Query(
+            API_KEY) apiKey: String,
+            @Query(LANG) language: String): Call<GenresResponse>
 }
