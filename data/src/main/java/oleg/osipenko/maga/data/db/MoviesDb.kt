@@ -28,6 +28,7 @@ abstract class MoviesDb : RoomDatabase() {
     abstract fun genresDao(): GenresDao
     abstract fun movieGenresDao(): MovieGenresDao
     abstract fun configDao(): ConfigurationDao
+    abstract fun upcomingDao(): UpcomingDao
 
     companion object {
         /**

@@ -7,6 +7,9 @@ import oleg.osipenko.domain.states.MoviesDataState
 
 class MainActivityViewModel(private val repository: MoviesRepository): ViewModel() {
     private val nowPlayingObservable: MoviesDataState<List<Movie>> = repository.nowPlaying()
+    private val comingSoonObservable: MoviesDataState<List<Movie>> = repository.comingSoon()
     val nowPlayingMovies = nowPlayingObservable.movies
     val nowPlayingNetworkState = nowPlayingObservable.networkState
+    val comingSoonMovies = comingSoonObservable.movies
+    val comingSoonNetworkState = comingSoonObservable.networkState
 }

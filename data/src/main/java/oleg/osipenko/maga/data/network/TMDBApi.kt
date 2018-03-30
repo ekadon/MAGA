@@ -69,8 +69,8 @@ interface TMDBApi {
     fun getUpcoming(
             @Query(API_KEY) apiKey: String,
             @Query(LANG) language: String,
-            @Query(PAGE) page: Int,
-            @Query(REGION) region: String): Call<MoviesResponse>
+            @Query(REGION) region: String,
+            @Query(PAGE) page: Int): Call<MoviesResponse>
 
     /**
      * Retrieves the list of genres

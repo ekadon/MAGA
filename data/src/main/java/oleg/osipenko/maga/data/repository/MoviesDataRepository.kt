@@ -8,7 +8,9 @@ import oleg.osipenko.domain.states.MoviesDataState
 import oleg.osipenko.domain.states.NetworkState
 import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.entities.MovieGenreRecord
+import oleg.osipenko.maga.data.entities.MovieRecord
 import oleg.osipenko.maga.data.entities.NowPlaying
+import oleg.osipenko.maga.data.entities.Upcoming
 import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
@@ -17,7 +19,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 import java.util.concurrent.Executor
-import kotlin.collections.ArrayList
 
 class MoviesDataRepository(
         private val db: MoviesDb,
@@ -25,6 +26,10 @@ class MoviesDataRepository(
         private val ioExecutor: Executor) : MoviesRepository {
 
     init {
+        loadGenres()
+    }
+
+    private fun loadGenres() {
         api.getGenres(TMDBApi.KEY, Locale.getDefault().language).enqueue(object : Callback<GenresResponse> {
             override fun onFailure(call: Call<GenresResponse>?, t: Throwable?) {
 
@@ -46,72 +51,83 @@ class MoviesDataRepository(
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
 
-        api.getNowPlaying(
-                TMDBApi.KEY,
-                Locale.getDefault().language,
-                Locale.getDefault().country,
-                1).enqueue(object : Callback<MoviesResponse> {
-            override fun onFailure(call: Call<MoviesResponse>?, t: Throwable?) {
-                networkState.value = NetworkState.error(t?.message)
-            }
-
-            override fun onResponse(call: Call<MoviesResponse>?, response: Response<MoviesResponse>?) {
-                if (isLoaded(response)) {
-                    handleSuccessfulResponse(networkState, response)
-                } else {
-                    networkState.value = NetworkState.error(extractErrorMessage(response))
-                }
-            }
-        })
+        api.getNowPlaying(TMDBApi.KEY, Locale.getDefault().language, Locale.getDefault().country, 1)
+                .enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
 
         return MoviesDataState(
-                Transformations.map(db.nowPlayingDao().nowPlaying) {
-                    it?.map {
-                        Movie(
-                                it.posterPath ?: "",
-                                it.adult ?: false,
-                                it.overview ?: "",
-                                it.releaseDate ?: "",
-                                it.genres?.split(",") ?: emptyList<String>(),
-                                it.id ?: Int.MIN_VALUE,
-                                it.originalTitle ?: "",
-                                it.originalLanguage ?: "",
-                                it.title ?: "",
-                                it.backdropPath ?: "",
-                                it.popularity ?: Float.MIN_VALUE,
-                                it.voteCount ?: Int.MIN_VALUE,
-                                it.video ?: "",
-                                it.voteAverage ?: Float.MIN_VALUE
-                        )
-                    } ?: emptyList()
-                }, networkState)
+                Transformations.map(db.nowPlayingDao().nowPlaying) {it?.map(movieMapper) ?: emptyList() },
+                networkState)
     }
 
-    private fun isLoaded(response: Response<out Any>?): Boolean {
-        return response?.isSuccessful == true && response.errorBody() == null
+    override fun comingSoon(): MoviesDataState<List<Movie>> {
+        val networkState = MutableLiveData<NetworkState>()
+        networkState.value = NetworkState.LOADING
+
+        api.getUpcoming(TMDBApi.KEY, Locale.getDefault().language, Locale.getDefault().country, 1)
+                .enqueue(MoviesCallback(networkState, handleSuccessfulUpcomingResponse))
+
+        return MoviesDataState(
+                Transformations.map(db.upcomingDao().upcoming) {it?.map(movieMapper) ?: emptyList() },
+                networkState)
     }
 
-    private fun handleSuccessfulResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
-        networkState.value = NetworkState.LOADED
-        response?.body()?.results?.let {
-            val movieGenres: MutableList<MovieGenreRecord> = ArrayList()
-            for (movie in it) {
-                val genreMovies: List<MovieGenreRecord> = movie.genreIds?.map {
-                    MovieGenreRecord(movieId = movie.id ?: Int.MIN_VALUE, genreId = it)
-                }?.toList() ?: emptyList()
-                movieGenres.addAll(genreMovies)
-            }
+    private val handleSuccessfulNowPlayingResponse = { networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>? ->
+        handleResponse(networkState, response, { movies ->
+            val movieGenres = getMovieGenres(movies)
 
-            val nowPlaying = it.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
+            val nowPlaying = movies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
-            ioExecutor.execute {
-                db.runInTransaction {
-                    db.moviesDao().insertMovies(it)
+            saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
+                override fun run() {
+                    super.run()
+                    db.nowPlayingDao().deleteAll()
                     db.nowPlayingDao().saveNowPlaying(nowPlaying)
-                    db.movieGenresDao().insertMovieGenres(movieGenres)
                 }
-            }
+            })
+        })
+    }
+
+    private val handleSuccessfulUpcomingResponse = { networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>? ->
+        handleResponse(networkState, response, { movies ->
+            val movieGenres = getMovieGenres(movies)
+
+            val upcoming = movies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
+
+            saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
+                override fun run() {
+                    super.run()
+                    db.upcomingDao().deleteAll()
+                    db.upcomingDao().saveUpcoming(upcoming)
+                }
+            })
+        })
+    }
+
+    private fun handleResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?, block: (List<MovieRecord>) -> Unit) {
+        networkState.value = NetworkState.LOADED
+
+        val movies = response?.body()?.results
+
+        movies?.let(block)
+    }
+
+    private fun saveDataToDb(saveAction: ResponseSaveAction) {
+        ioExecutor.execute {
+            db.runInTransaction(saveAction)
         }
+    }
+
+    abstract inner class ResponseSaveAction(private val movies: List<MovieRecord>, private val movieGenres: List<MovieGenreRecord>) : Runnable {
+        override fun run() {
+            db.moviesDao().insertMovies(movies)
+            db.movieGenresDao().insertMovieGenres(movieGenres)
+        }
+    }
+
+    private fun getMovieGenres(movies: List<MovieRecord>): List<MovieGenreRecord> {
+        return movies.flatMap { movieRecord ->
+            movieRecord.genreIds?.map { MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = it) }?.toList() ?: emptyList()
+        }.toList()
     }
 
     private fun extractErrorMessage(response: Response<out Any>?): String {
@@ -123,8 +139,39 @@ class MoviesDataRepository(
         }
     }
 
-    override fun comingSoon(): MoviesDataState<List<Movie>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private inner class MoviesCallback(private val networkState: MutableLiveData<NetworkState>, private val successfulCallback: (MutableLiveData<NetworkState>, Response<MoviesResponse>?) -> Unit) : Callback<MoviesResponse> {
+        override fun onFailure(call: Call<MoviesResponse>?, t: Throwable?) {
+            networkState.value = NetworkState.error(t?.message)
+        }
+
+        override fun onResponse(call: Call<MoviesResponse>?, response: Response<MoviesResponse>?) {
+            if (isLoaded(response)) {
+                successfulCallback.invoke(networkState, response)
+            } else {
+                networkState.value = NetworkState.error(extractErrorMessage(response))
+            }
+        }
+    }
+
+    private fun isLoaded(response: Response<out Any>?): Boolean {
+        return response?.isSuccessful == true && response.errorBody() == null
+    }
+
+    private val movieMapper = { movieRecord: MovieRecord ->
+        Movie(movieRecord.posterPath ?: "",
+                movieRecord.adult ?: false,
+                movieRecord.overview ?: "",
+                movieRecord.releaseDate ?: "",
+                movieRecord.genres?.split(",") ?: emptyList<String>(),
+                movieRecord.id ?: Int.MIN_VALUE,
+                movieRecord.originalTitle ?: "",
+                movieRecord.originalLanguage ?: "",
+                movieRecord.title ?: "",
+                movieRecord.backdropPath ?: "",
+                movieRecord.popularity ?: Float.MIN_VALUE,
+                movieRecord.voteCount ?: Int.MIN_VALUE,
+                movieRecord.video ?: "",
+                movieRecord.voteAverage ?: Float.MIN_VALUE)
     }
 
     companion object {

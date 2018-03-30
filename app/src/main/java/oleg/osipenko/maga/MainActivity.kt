@@ -27,7 +27,9 @@ class MainActivity : AppCompatActivity() {
                 return MainActivityViewModel(repo) as T
             }
         })[MainActivityViewModel::class.java]
-        viewModel.nowPlayingMovies.observe(this, Observer { text.text = it?.toString() })
+        viewModel.nowPlayingMovies.observe(this, Observer { now.text = it?.toString() })
         viewModel.nowPlayingNetworkState.observe(this, Observer { Toast.makeText(this, it?.throwableMessage, Toast.LENGTH_LONG).show() })
+        viewModel.comingSoonMovies.observe(this, Observer { soon.text = it?.toString() })
+        viewModel.comingSoonNetworkState.observe(this, Observer { Toast.makeText(this, it?.throwableMessage, Toast.LENGTH_LONG).show() })
     }
 }

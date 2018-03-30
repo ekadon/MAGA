@@ -8,25 +8,25 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import oleg.osipenko.maga.data.entities.MovieRecord;
-import oleg.osipenko.maga.data.entities.NowPlaying;
+import oleg.osipenko.maga.data.entities.Upcoming;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
-public interface NowPlayingDao {
+public interface UpcomingDao {
 
     @Insert(onConflict = REPLACE)
-    void saveNowPlaying(List<NowPlaying> nowPlayings);
+    void saveUpcoming(List<Upcoming> upcomings);
 
     @Query("SELECT movies.id, movies.title, movies.posterPath, movies.releaseDate, movies.voteAverage, " +
         "GROUP_CONCAT(genres.name) AS genres " +
-        "FROM nowplaying INNER JOIN movie_genres " +
+        "FROM upcoming INNER JOIN movie_genres " +
         "JOIN movies ON movies.id = movie_genres.movieId " +
         "JOIN genres ON genres.id = movie_genres.genreId " +
-        "WHERE nowplaying.movieId = movies.id " +
+        "WHERE upcoming.movieId = movies.id " +
         "GROUP BY movies.id")
-    LiveData<List<MovieRecord>> getNowPlaying();
+    LiveData<List<MovieRecord>> getUpcoming();
 
-    @Query("DELETE FROM nowplaying")
+    @Query("DELETE FROM upcoming")
     void deleteAll();
 }
