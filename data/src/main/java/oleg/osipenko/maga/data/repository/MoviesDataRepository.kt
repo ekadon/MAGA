@@ -1,17 +1,17 @@
 package oleg.osipenko.maga.data.repository
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
+import oleg.osipenko.domain.entities.Configuration
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.domain.states.MoviesDataState
 import oleg.osipenko.domain.states.NetworkState
 import oleg.osipenko.maga.data.db.MoviesDb
-import oleg.osipenko.maga.data.entities.MovieGenreRecord
-import oleg.osipenko.maga.data.entities.MovieRecord
-import oleg.osipenko.maga.data.entities.NowPlaying
-import oleg.osipenko.maga.data.entities.Upcoming
+import oleg.osipenko.maga.data.entities.*
 import oleg.osipenko.maga.data.network.TMDBApi
+import oleg.osipenko.maga.data.network.dto.ApiConfigurationResponse
 import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import retrofit2.Call
@@ -27,6 +27,7 @@ class MoviesDataRepository(
 
     init {
         loadGenres()
+        loadConfiguration()
     }
 
     private fun loadGenres() {
@@ -47,6 +48,31 @@ class MoviesDataRepository(
         })
     }
 
+    private fun loadConfiguration() {
+        api.getConfig(TMDBApi.KEY).enqueue(object : Callback<ApiConfigurationResponse> {
+            override fun onFailure(call: Call<ApiConfigurationResponse>?, t: Throwable?) {
+
+            }
+
+            override fun onResponse(call: Call<ApiConfigurationResponse>?, response: Response<ApiConfigurationResponse>?) {
+                response?.body()?.images?.let {
+                    ioExecutor.execute {
+                        db.runInTransaction {
+                            db.configDao().deleteAll()
+                            db.configDao().insertConfiguration(ConfigurationRecord(1, it.secureBaseUrl, it.posterSizes, it.backdropSizes))
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    override fun configuration(): LiveData<Configuration> {
+        return Transformations.map(db.configDao().configuration) {
+            Configuration(it?.baseUrl ?: "", it?.posterSizes ?: emptyList(), it?.backdropSizes ?: emptyList())
+        }
+    }
+
     override fun nowPlaying(): MoviesDataState<List<Movie>> {
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
@@ -55,7 +81,7 @@ class MoviesDataRepository(
                 .enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
 
         return MoviesDataState(
-                Transformations.map(db.nowPlayingDao().nowPlaying) {it?.map(movieMapper) ?: emptyList() },
+                Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map(movieMapper) ?: emptyList() },
                 networkState)
     }
 
@@ -67,7 +93,7 @@ class MoviesDataRepository(
                 .enqueue(MoviesCallback(networkState, handleSuccessfulUpcomingResponse))
 
         return MoviesDataState(
-                Transformations.map(db.upcomingDao().upcoming) {it?.map(movieMapper) ?: emptyList() },
+                Transformations.map(db.upcomingDao().upcoming) { it?.map(movieMapper) ?: emptyList() },
                 networkState)
     }
 

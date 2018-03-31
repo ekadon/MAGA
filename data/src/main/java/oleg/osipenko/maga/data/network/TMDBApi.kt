@@ -25,7 +25,7 @@ interface TMDBApi {
         private const val LANG = "language"
         private const val PAGE = "page"
         private const val REGION = "region"
-        private const val BASE_URL = "https://api.themoviedb.org/"
+        private const val BASE_URL = "https://api.thxemoviedb.org/"
         const val KEY = "599635c208eca8fcc4bb1a1330965ae7"
 
         fun create(): TMDBApi {

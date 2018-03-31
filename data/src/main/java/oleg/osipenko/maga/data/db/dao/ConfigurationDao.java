@@ -19,4 +19,7 @@ public interface ConfigurationDao {
 
     @Query("SELECT * FROM config")
     LiveData<ConfigurationRecord> getConfiguration();
+
+    @Query("DELETE FROM config")
+    void deleteAll();
 }

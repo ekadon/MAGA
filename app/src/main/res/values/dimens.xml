@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_1">24sp</dimen>
+    <dimen name="text_size_2">20sp</dimen>
+    <dimen name="margin_material">16dp</dimen>
+    <dimen name="margin_material_half">8dp</dimen>
+    <dimen name="height_coming_soon">120dp</dimen>
+    <dimen name="width_coming_soon">80dp</dimen>
+</resources>

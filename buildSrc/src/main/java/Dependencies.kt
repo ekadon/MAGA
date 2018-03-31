@@ -1,5 +1,5 @@
 object Versions {
-    val androidPlugin = "3.0.1"
+    val androidPlugin = "3.1.0"
     val kotlin = "1.2.31"
     val appCompat = "27.1.0"
     val glide = "4.6.1"

@@ -18,7 +18,7 @@ public interface UpcomingDao {
     @Insert(onConflict = REPLACE)
     void saveUpcoming(List<Upcoming> upcomings);
 
-    @Query("SELECT movies.id, movies.title, movies.posterPath, movies.releaseDate, movies.voteAverage, " +
+    @Query("SELECT movies.id, movies.title, movies.posterPath, movies.backdropPath, movies.releaseDate, movies.voteAverage, " +
         "GROUP_CONCAT(genres.name) AS genres " +
         "FROM upcoming INNER JOIN movie_genres " +
         "JOIN movies ON movies.id = movie_genres.movieId " +

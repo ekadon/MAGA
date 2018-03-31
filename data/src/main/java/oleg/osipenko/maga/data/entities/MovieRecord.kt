@@ -26,7 +26,7 @@ data class MovieRecord(
         var video: String?,
         @SerializedName("vote_average") var voteAverage: Float?
 ) {
-    constructor(id: Int, title: String?, posterPath: String?, releaseDate: String?, voteAverage: Float?, genres: String?): this(
-            id, title, null, posterPath, null, releaseDate, genres, null, null, null,
-            null, null, null, null, voteAverage)
+    constructor(id: Int, title: String?, posterPath: String?, backdropPath: String?, releaseDate: String?, voteAverage: Float?, genres: String?):
+            this(id, title, null, posterPath, null, releaseDate, genres, null, null, null,
+            backdropPath, null, null, null, voteAverage)
 }
