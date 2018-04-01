@@ -57,6 +57,7 @@ class NowPlayingFragment : Fragment() {
             }
         })
     }
+
     private fun getImageUrl(baseUrl: String, imagePath: String, sizes: List<String>): String {
         val baseUrlSize = baseUrl + closestSize(sizes)
         return baseUrlSize + imagePath

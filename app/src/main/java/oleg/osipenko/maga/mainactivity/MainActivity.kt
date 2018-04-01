@@ -6,9 +6,11 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
+import android.view.View
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import oleg.osipenko.maga.R
@@ -42,6 +44,15 @@ class MainActivity : AppCompatActivity() {
 
         pager_now_playing.adapter = nowPlayingAdapter
         pager_now_playing.clipToPadding = false
+        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer{
+            override fun transformPage(page: View, position: Float) {
+                if (position < -0.5 || position > 0.5) {
+                    page.alpha = 0.6f
+                } else {
+                    page.alpha = 1f
+                }
+            }
+        })
     }
 
     private fun initViewModel() {
@@ -75,9 +86,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeComingSoon(viewModel: MainActivityViewModel) {
-        viewModel.comingSoonMovies.observe(this, Observer {
-            comingSoonAdapter.setMovies(it)
-        })
+        viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.setMovies(it) })
         viewModel.comingSoonErrorMessage.observe(this, errorObserver)
     }
 

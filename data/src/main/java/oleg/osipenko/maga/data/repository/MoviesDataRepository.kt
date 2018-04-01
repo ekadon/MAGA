@@ -17,7 +17,6 @@ import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import java.util.concurrent.Executor
 
 class MoviesDataRepository(
@@ -31,7 +30,7 @@ class MoviesDataRepository(
     }
 
     private fun loadGenres() {
-        api.getGenres(TMDBApi.KEY, Locale.getDefault().language).enqueue(object : Callback<GenresResponse> {
+        api.getGenres().enqueue(object : Callback<GenresResponse> {
             override fun onFailure(call: Call<GenresResponse>?, t: Throwable?) {
 
             }
@@ -40,7 +39,7 @@ class MoviesDataRepository(
                 if (isLoaded(response)) {
                     response?.body()?.genres?.let {
                         ioExecutor.execute {
-                            db.genresDao().insertGenres(it)
+                            db.genresDao().insertGenres(it + GenreRecord(Int.MIN_VALUE, ""))
                         }
                     }
                 }
@@ -49,7 +48,7 @@ class MoviesDataRepository(
     }
 
     private fun loadConfiguration() {
-        api.getConfig(TMDBApi.KEY).enqueue(object : Callback<ApiConfigurationResponse> {
+        api.getConfig().enqueue(object : Callback<ApiConfigurationResponse> {
             override fun onFailure(call: Call<ApiConfigurationResponse>?, t: Throwable?) {
 
             }
@@ -77,7 +76,7 @@ class MoviesDataRepository(
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
 
-        api.getNowPlaying(TMDBApi.KEY, Locale.getDefault().language, Locale.getDefault().country, 1)
+        api.getNowPlaying(1)
                 .enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
 
         return MoviesDataState(
@@ -89,7 +88,7 @@ class MoviesDataRepository(
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
 
-        api.getUpcoming(TMDBApi.KEY, Locale.getDefault().language, Locale.getDefault().country, 1)
+        api.getUpcoming(1)
                 .enqueue(MoviesCallback(networkState, handleSuccessfulUpcomingResponse))
 
         return MoviesDataState(
@@ -152,7 +151,11 @@ class MoviesDataRepository(
 
     private fun getMovieGenres(movies: List<MovieRecord>): List<MovieGenreRecord> {
         return movies.flatMap { movieRecord ->
-            movieRecord.genreIds?.map { MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = it) }?.toList() ?: emptyList()
+            if (movieRecord.genreIds?.isNotEmpty() != false) {
+                movieRecord.genreIds?.map { MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = it) }?.toList() ?: emptyList()
+            } else {
+                listOf(MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = Int.MIN_VALUE))
+            }
         }.toList()
     }
 

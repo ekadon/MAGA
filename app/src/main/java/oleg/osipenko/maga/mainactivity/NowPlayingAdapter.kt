@@ -2,10 +2,10 @@ package oleg.osipenko.maga.mainactivity
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import oleg.osipenko.domain.entities.Movie
 
-class NowPlayingAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
+class NowPlayingAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
 
     private lateinit var baseUrl: String
     private lateinit var posters: List<String>

@@ -17,8 +17,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:paddingLeft="@dimen/margin_material"
-        android:paddingRight="@dimen/margin_material"
-        android:background="@color/colorPrimary"/>
+        android:paddingRight="@dimen/margin_material"/>
 
     <ImageView
         android:layout_width="0dp"
