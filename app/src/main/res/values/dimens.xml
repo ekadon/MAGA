@@ -4,6 +4,8 @@
     <dimen name="text_size_2">20sp</dimen>
     <dimen name="margin_material">16dp</dimen>
     <dimen name="margin_material_half">8dp</dimen>
-    <dimen name="height_coming_soon">120dp</dimen>
-    <dimen name="width_coming_soon">80dp</dimen>
+    <dimen name="height_coming_soon">140dp</dimen>
+    <dimen name="width_coming_soon">93dp</dimen>
+    <dimen name="height_status_bar">25dp</dimen>
+    <dimen name="height_pager">400dp</dimen>
 </resources>

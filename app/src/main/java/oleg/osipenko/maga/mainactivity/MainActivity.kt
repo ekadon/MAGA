@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import oleg.osipenko.maga.R
@@ -38,13 +40,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         val comingSoonLm = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         list_coming_soon.layoutManager = comingSoonLm
         list_coming_soon.adapter = comingSoonAdapter
 
         pager_now_playing.adapter = nowPlayingAdapter
         pager_now_playing.clipToPadding = false
-        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer{
+        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
             override fun transformPage(page: View, position: Float) {
                 if (position < -0.5 || position > 0.5) {
                     page.alpha = 0.6f
@@ -53,6 +56,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+        (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+        (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+    }
+
+    fun getStatusBarHeight(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+
+        return if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            resources.getDimensionPixelSize(R.dimen.height_status_bar)
+        }
     }
 
     private fun initViewModel() {
