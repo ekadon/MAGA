@@ -5,6 +5,7 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
+import java.util.*
 
 /**
  * MoviesDb entity linking together movie and genre
@@ -27,7 +28,7 @@ import android.arch.persistence.room.PrimaryKey
                     onDelete = CASCADE))]
 )
 data class MovieGenreRecord(
-        @PrimaryKey(autoGenerate = true) val id: Int = 0,
+        @PrimaryKey val id: String = UUID.randomUUID().toString(),
         val movieId: Int,
         val genreId: Int
 )
