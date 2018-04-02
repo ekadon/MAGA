@@ -46,6 +46,7 @@ dependencies {
     implementation UiDependencies.recyclerView
     kapt UiDependencies.dataBinding
     implementation UiDependencies.design
+    implementation CoreDependencies.threeten
 
     implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
     kapt ArchitectureComponents.lifeCycleCompiler

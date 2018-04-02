@@ -14,6 +14,8 @@ import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.network.dto.ApiConfigurationResponse
 import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
+import org.threeten.bp.LocalDate
+import org.threeten.bp.Period
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,6 +25,8 @@ class MoviesDataRepository(
         private val db: MoviesDb,
         private val api: TMDBApi,
         private val ioExecutor: Executor) : MoviesRepository {
+
+    private var currentDate: LocalDate = LocalDate.now()
 
     init {
         loadGenres()
@@ -131,9 +135,19 @@ class MoviesDataRepository(
     private fun handleResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?, block: (List<MovieRecord>) -> Unit) {
         networkState.value = NetworkState.LOADED
 
-        val movies = response?.body()?.results
+        val movies = response?.body()?.results?.filter(dateFilter)
 
         movies?.let(block)
+    }
+
+    private val dateFilter = { movieRecord: MovieRecord ->
+        val movieDate = LocalDate.parse(movieRecord.releaseDate)
+            val dateDelta = Period.between(currentDate, movieDate)
+            if (dateDelta.isNegative) {
+                dateDelta.days < TWO_WEEKS && Math.abs(dateDelta.toTotalMonths()) < 1
+            } else {
+                true
+            }
     }
 
     private fun saveDataToDb(saveAction: ResponseSaveAction) {
@@ -205,5 +219,6 @@ class MoviesDataRepository(
 
     companion object {
         const val UNKNOWN_ERROR = "unknown error happened"
+        const val TWO_WEEKS = 14
     }
 }

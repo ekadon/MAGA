@@ -89,17 +89,19 @@ class MainActivity : AppCompatActivity() {
     private fun observeNowPlaying(viewModel: MainActivityViewModel) {
         viewModel.nowPlayingMovies.observe(this, Observer {
             nowPlayingAdapter.setMovies(it)
-            val startIndex = (it?.size ?:0) * 10
-            pager_now_playing.setCurrentItem(startIndex, false)
-            pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
-                override fun transformPage(page: View, position: Float) {
-                    if (position < -0.3 || position > 0.3) {
-                        page.alpha = 0.6f
-                    } else {
-                        page.alpha = 1f
+            if (it?.isNotEmpty() == true) {
+                val startIndex = it.size * 10
+                pager_now_playing.setCurrentItem(startIndex, false)
+                pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
+                    override fun transformPage(page: View, position: Float) {
+                        if (position < -0.3 || position > 0.3) {
+                            page.alpha = 0.6f
+                        } else {
+                            page.alpha = 1f
+                        }
                     }
-                }
-            })
+                })
+            }
         })
         viewModel.nowPlayingErrorMessage.observe(this, errorObserver)
     }

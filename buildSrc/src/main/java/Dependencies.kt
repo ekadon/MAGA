@@ -10,6 +10,7 @@ object Versions {
     val archComponents = "1.1.1"
     val dagger = "2.14.1"
     val paging = "1.0.0-alpha7"
+    val threeten = "1.0.5"
 
     val junit = "4.12"
     val mockitoKotlin = "1.5.0"
@@ -32,6 +33,7 @@ object CoreDependencies {
     val daggerAndroid = "com.google.dagger:dagger-android-support:${Versions.dagger}"
     val daggerAndroidSupport = "com.google.dagger:dagger-android-support:${Versions.dagger}"
     val daggerAndroidCompiler = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
+    val threeten = "com.jakewharton.threetenabp:threetenabp:${Versions.threeten}"
 }
 
 object UiDependencies {
