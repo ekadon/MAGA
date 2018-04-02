@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val db = MoviesDb.create(this@MainActivity)
-                val api = TMDBApi.create()
+                val api = TMDBApi.create(this@MainActivity)
                 val repo = MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
                 @Suppress("UNCHECKED_CAST")
                 return MainActivityViewModel(repo) as T

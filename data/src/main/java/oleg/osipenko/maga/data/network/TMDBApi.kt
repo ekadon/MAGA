@@ -1,5 +1,7 @@
 package oleg.osipenko.maga.data.network
 
+import android.content.Context
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,7 +32,7 @@ interface TMDBApi {
         private const val PAGE = "page"
         private const val BASE_URL = "https://api.themoviedb.org/"
 
-        fun create(): TMDBApi {
+        fun create(context: Context): TMDBApi {
 
             val logger = HttpLoggingInterceptor()
             logger.level = HttpLoggingInterceptor.Level.BODY
@@ -48,15 +50,20 @@ interface TMDBApi {
                         .build()
 
                 val request = original.newBuilder()
+                        .addHeader("Content-Encoding", "gzip")
                         .url(url)
                         .build()
 
                 return@Interceptor chain.proceed(request)
             }
 
+            val cacheSize = 10 * 1024 * 1024L
+            val cache = Cache(context.cacheDir, cacheSize)
+
             val client = OkHttpClient.Builder()
                     .addInterceptor(logger)
                     .addInterceptor(paramInterceptor)
+                    .cache(cache)
                     .build()
 
             return Retrofit.Builder()

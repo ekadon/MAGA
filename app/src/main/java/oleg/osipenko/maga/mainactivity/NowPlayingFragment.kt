@@ -41,7 +41,7 @@ class NowPlayingFragment : Fragment() {
         val viewModel = ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val db = MoviesDb.create(context!!)
-                val api = TMDBApi.create()
+                val api = TMDBApi.create(context!!)
                 val repo = MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
                 @Suppress("UNCHECKED_CAST")
                 return MainActivityViewModel(repo) as T
