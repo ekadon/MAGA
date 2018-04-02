@@ -47,20 +47,11 @@ class MainActivity : AppCompatActivity() {
 
         pager_now_playing.adapter = nowPlayingAdapter
         pager_now_playing.clipToPadding = false
-        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
-            override fun transformPage(page: View, position: Float) {
-                if (position < -0.5 || position > 0.5) {
-                    page.alpha = 0.6f
-                } else {
-                    page.alpha = 1f
-                }
-            }
-        })
         (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
         (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
     }
 
-    fun getStatusBarHeight(): Int {
+    private fun getStatusBarHeight(): Int {
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
 
         return if (resourceId > 0) {
@@ -96,7 +87,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeNowPlaying(viewModel: MainActivityViewModel) {
-        viewModel.nowPlayingMovies.observe(this, Observer { nowPlayingAdapter.setMovies(it) })
+        viewModel.nowPlayingMovies.observe(this, Observer {
+            nowPlayingAdapter.setMovies(it)
+            val startIndex = (it?.size ?:0) * 10
+            pager_now_playing.setCurrentItem(startIndex, false)
+            pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
+                override fun transformPage(page: View, position: Float) {
+                    if (position < -0.3 || position > 0.3) {
+                        page.alpha = 0.6f
+                    } else {
+                        page.alpha = 1f
+                    }
+                }
+            })
+        })
         viewModel.nowPlayingErrorMessage.observe(this, errorObserver)
     }
 

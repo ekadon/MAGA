@@ -24,9 +24,13 @@ class NowPlayingAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
         this.posters = posters ?: emptyList()
     }
 
-    override fun getCount() = movies.size
+    override fun getCount() = if (movies.isEmpty()) 0 else Int.MAX_VALUE
 
     override fun getItem(position: Int): Fragment {
-        return NowPlayingFragment.newInstance(movies[position].posterPath)
+        return NowPlayingFragment.newInstance(movies[getMoviePosition(position)].posterPath)
+    }
+
+    private fun getMoviePosition(pagerPosition: Int): Int {
+        return pagerPosition % movies.size
     }
 }
