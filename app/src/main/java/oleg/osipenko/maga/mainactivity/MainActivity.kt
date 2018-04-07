@@ -26,7 +26,7 @@ import java.util.concurrent.Executors
  */
 class MainActivity : AppCompatActivity() {
 
-    private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this)) }
+    private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
     private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
     private lateinit var viewModel: MainActivityViewModel
 
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeComingSoon(viewModel: MainActivityViewModel) {
-        viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.setMovies(it) })
+        viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
         viewModel.comingSoonErrorMessage.observe(this, errorObserver)
     }
 
