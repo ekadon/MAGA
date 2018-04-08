@@ -1,7 +1,7 @@
 object Versions {
     val androidPlugin = "3.1.0"
     val kotlin = "1.2.31"
-    val appCompat = "27.1.0"
+    val appCompat = "27.1.1"
     val glide = "4.6.1"
     val retrofit = "2.3.0"
     val room = "1.0.0"
