@@ -80,12 +80,15 @@ class MoviesDataRepository(
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
 
-        api.getNowPlaying(1)
-                .enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
+        loadNowPlaying(networkState)
 
         return MoviesDataState(
                 Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map(movieMapper) ?: emptyList() },
                 networkState)
+    }
+
+    private fun loadNowPlaying(networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE) {
+        api.getNowPlaying(page).enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
     }
 
     override fun comingSoon(): MoviesDataState<List<Movie>> {
@@ -101,6 +104,10 @@ class MoviesDataRepository(
     }
 
     private val handleSuccessfulNowPlayingResponse = { networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>? ->
+        val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
+        if (hasMorePages(response)) {
+            loadMore(currentPage, networkState)
+        }
         handleResponse(networkState, response, { movies ->
             val movieGenres = getMovieGenres(movies)
 
@@ -109,7 +116,9 @@ class MoviesDataRepository(
             saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
                 override fun run() {
                     super.run()
-                    db.nowPlayingDao().deleteAll()
+                    if (currentPage == DEFAULT_START_PAGE) {
+                        db.nowPlayingDao().deleteAll()
+                    }
                     db.nowPlayingDao().saveNowPlaying(nowPlaying)
                 }
             })
@@ -133,21 +142,29 @@ class MoviesDataRepository(
     }
 
     private fun handleResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?, block: (List<MovieRecord>) -> Unit) {
-        networkState.value = NetworkState.LOADED
-
+        networkState.postValue(NetworkState.LOADED)
         val movies = response?.body()?.results?.filter(dateFilter)
+        if (movies != null && movies.isNotEmpty()) {
+            block.invoke(movies)
+        }
+    }
 
-        movies?.let(block)
+    private fun hasMorePages(response: Response<MoviesResponse>?): Boolean {
+        return response?.body()?.page ?: DEFAULT_START_PAGE < response?.body()?.totalPages ?: DEFAULT_START_PAGE
+    }
+
+    private fun loadMore(loadedPage: Int, networkState: MutableLiveData<NetworkState>) {
+        loadNowPlaying(networkState, loadedPage + 1)
     }
 
     private val dateFilter = { movieRecord: MovieRecord ->
         val movieDate = LocalDate.parse(movieRecord.releaseDate)
-            val dateDelta = Period.between(currentDate, movieDate)
-            if (dateDelta.isNegative) {
-                dateDelta.days < TWO_WEEKS && Math.abs(dateDelta.toTotalMonths()) < 1
-            } else {
-                true
-            }
+        val dateDelta = Period.between(currentDate, movieDate)
+        if (dateDelta.isNegative) {
+            dateDelta.days < TWO_WEEKS && Math.abs(dateDelta.toTotalMonths()) < 1
+        } else {
+            true
+        }
     }
 
     private fun saveDataToDb(saveAction: ResponseSaveAction) {
@@ -220,5 +237,6 @@ class MoviesDataRepository(
     companion object {
         const val UNKNOWN_ERROR = "unknown error happened"
         const val TWO_WEEKS = 14
+        const val DEFAULT_START_PAGE = 1
     }
 }
