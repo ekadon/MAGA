@@ -6,9 +6,6 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import oleg.osipenko.domain.entities.Movie
 
 class NowPlayingAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
-
-    private lateinit var baseUrl: String
-    private lateinit var posters: List<String>
     private val movies: MutableList<Movie> = ArrayList()
 
     fun setMovies(nowPlaying: List<Movie>?) {
@@ -17,11 +14,6 @@ class NowPlayingAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
             movies.addAll(nowPlaying)
             notifyDataSetChanged()
         }
-    }
-
-    fun setConfiguration(baseUrl: String?, posters: List<String>?) {
-        this.baseUrl = baseUrl ?: ""
-        this.posters = posters ?: emptyList()
     }
 
     override fun getCount() = if (movies.isEmpty()) 0 else Int.MAX_VALUE

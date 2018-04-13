@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
     private fun loadConfig() {
         viewModel.configObservable.observe(this, Observer { config ->
             comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
-            nowPlayingAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
             startObservingMovies(viewModel)
         })
     }

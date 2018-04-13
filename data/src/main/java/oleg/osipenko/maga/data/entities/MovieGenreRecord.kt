@@ -3,6 +3,7 @@ package oleg.osipenko.maga.data.entities
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.ForeignKey.CASCADE
+import android.arch.persistence.room.ForeignKey.NO_ACTION
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
@@ -19,13 +20,13 @@ import java.util.*
                     parentColumns = ["id"],
                     childColumns = ["movieId"],
                     onUpdate = CASCADE,
-                    onDelete = CASCADE)),
+                    onDelete = NO_ACTION)),
             (ForeignKey(
                     entity = GenreRecord::class,
                     parentColumns = ["id"],
                     childColumns = ["genreId"],
                     onUpdate = CASCADE,
-                    onDelete = CASCADE))]
+                    onDelete = NO_ACTION))]
 )
 data class MovieGenreRecord(
         @PrimaryKey val id: String = UUID.randomUUID().toString(),

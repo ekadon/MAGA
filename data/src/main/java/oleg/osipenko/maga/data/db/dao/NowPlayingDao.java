@@ -24,7 +24,8 @@ public interface NowPlayingDao {
         "JOIN movies ON movies.id = movie_genres.movieId " +
         "JOIN genres ON genres.id = movie_genres.genreId " +
         "WHERE nowplaying.movieId = movies.id " +
-        "GROUP BY movies.id")
+        "GROUP BY movies.id " +
+        "ORDER BY movies.releaseDate DESC")
     LiveData<List<MovieRecord>> getNowPlaying();
 
     @Query("DELETE FROM nowplaying")

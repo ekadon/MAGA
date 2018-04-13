@@ -10,6 +10,7 @@ import oleg.osipenko.maga.data.entities.MovieGenreRecord
  */
 @Dao
 interface MovieGenresDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMovieGenres(moviesGenres: List<MovieGenreRecord>)
 }

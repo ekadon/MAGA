@@ -24,7 +24,8 @@ public interface UpcomingDao {
         "JOIN movies ON movies.id = movie_genres.movieId " +
         "JOIN genres ON genres.id = movie_genres.genreId " +
         "WHERE upcoming.movieId = movies.id " +
-        "GROUP BY movies.id")
+        "GROUP BY movies.id " +
+        "ORDER BY movies.releaseDate ASC")
     LiveData<List<MovieRecord>> getUpcoming();
 
     @Query("DELETE FROM upcoming")

@@ -10,6 +10,7 @@ import oleg.osipenko.maga.data.entities.GenreRecord
  */
 @Dao
 interface GenresDao {
+
     @Insert(onConflict = REPLACE)
     fun insertGenres(genres: List<GenreRecord>)
 }

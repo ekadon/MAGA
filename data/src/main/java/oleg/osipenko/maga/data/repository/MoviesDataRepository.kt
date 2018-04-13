@@ -16,6 +16,7 @@ import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
+import org.threeten.bp.temporal.ChronoUnit
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,36 +81,30 @@ class MoviesDataRepository(
         val networkState = MutableLiveData<NetworkState>()
         networkState.value = NetworkState.LOADING
 
-        loadNowPlaying(networkState)
+        loadNowPlaying(networkState) { state, callback -> handleSuccessfulNowPlayingResponse(state, callback) }
 
         return MoviesDataState(
                 Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map(movieMapper) ?: emptyList() },
                 networkState)
     }
 
-    private fun loadNowPlaying(networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE) {
-        api.getNowPlaying(page).enqueue(MoviesCallback(networkState, handleSuccessfulNowPlayingResponse))
+    private fun loadNowPlaying(networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE, successfulCallback: (MutableLiveData<NetworkState>, Response<MoviesResponse>?) -> Unit) {
+        loadMovies(api.getNowPlaying(page), MoviesCallback(networkState, successfulCallback))
     }
 
-    override fun comingSoon(): MoviesDataState<List<Movie>> {
-        val networkState = MutableLiveData<NetworkState>()
-        networkState.value = NetworkState.LOADING
-
-        api.getUpcoming(1)
-                .enqueue(MoviesCallback(networkState, handleSuccessfulUpcomingResponse))
-
-        return MoviesDataState(
-                Transformations.map(db.upcomingDao().upcoming) { it?.map(movieMapper) ?: emptyList() },
-                networkState)
+    private fun loadMovies(call: Call<MoviesResponse>, callback: MoviesCallback) {
+        call.enqueue(callback)
     }
 
-    private val handleSuccessfulNowPlayingResponse = { networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>? ->
+    private fun handleSuccessfulNowPlayingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
         val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
         if (hasMorePages(response)) {
-            loadMore(currentPage, networkState)
+            val nextPage = currentPage + 1
+            loadNowPlaying(networkState, nextPage) { state, callback -> handleSuccessfulNowPlayingResponse(state, callback) }
         }
-        handleResponse(networkState, response, { movies ->
-            val movieGenres = getMovieGenres(movies)
+        val filteredMovies = response?.body()?.results?.filter { nowPlayingDateFilter(it) }
+        val movieGenres = getMovieGenres(filteredMovies)
+        handleResponse(networkState, filteredMovies, { movies ->
 
             val nowPlaying = movies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
@@ -125,25 +120,47 @@ class MoviesDataRepository(
         })
     }
 
-    private val handleSuccessfulUpcomingResponse = { networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>? ->
-        handleResponse(networkState, response, { movies ->
-            val movieGenres = getMovieGenres(movies)
+    override fun comingSoon(): MoviesDataState<List<Movie>> {
+        val networkState = MutableLiveData<NetworkState>()
+        networkState.value = NetworkState.LOADING
+
+        loadComingSoon(networkState) { state, callback -> handleSuccessfulUpcomingResponse(state, callback) }
+
+        return MoviesDataState(
+                Transformations.map(db.upcomingDao().upcoming) { it?.map(movieMapper) ?: emptyList() },
+                networkState)
+    }
+
+    private fun loadComingSoon(networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE, successfulCallback: (MutableLiveData<NetworkState>, Response<MoviesResponse>?) -> Unit) {
+        loadMovies(api.getUpcoming(page), MoviesCallback(networkState, successfulCallback))
+    }
+
+    private fun handleSuccessfulUpcomingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
+        val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
+        if (hasMorePages(response)) {
+            val nextPage = currentPage + 1
+            loadComingSoon(networkState, nextPage) { state, callback -> handleSuccessfulUpcomingResponse(state, callback) }
+        }
+        val filteredMovies = response?.body()?.results?.filter { upcomingDateFilter(it) }
+        val movieGenres = getMovieGenres(filteredMovies)
+        handleResponse(networkState, filteredMovies, { movies ->
 
             val upcoming = movies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
 
             saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
                 override fun run() {
                     super.run()
-                    db.upcomingDao().deleteAll()
+                    if (currentPage == DEFAULT_START_PAGE) {
+                        db.upcomingDao().deleteAll()
+                    }
                     db.upcomingDao().saveUpcoming(upcoming)
                 }
             })
         })
     }
 
-    private fun handleResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?, block: (List<MovieRecord>) -> Unit) {
+    private fun handleResponse(networkState: MutableLiveData<NetworkState>, movies: List<MovieRecord>?, block: (List<MovieRecord>) -> Unit) {
         networkState.postValue(NetworkState.LOADED)
-        val movies = response?.body()?.results?.filter(dateFilter)
         if (movies != null && movies.isNotEmpty()) {
             block.invoke(movies)
         }
@@ -153,18 +170,16 @@ class MoviesDataRepository(
         return response?.body()?.page ?: DEFAULT_START_PAGE < response?.body()?.totalPages ?: DEFAULT_START_PAGE
     }
 
-    private fun loadMore(loadedPage: Int, networkState: MutableLiveData<NetworkState>) {
-        loadNowPlaying(networkState, loadedPage + 1)
+    private fun nowPlayingDateFilter(movieRecord: MovieRecord): Boolean {
+        val movieDate = LocalDate.parse(movieRecord.releaseDate)
+        val daysSinceRelease = ChronoUnit.DAYS.between(currentDate, movieDate)
+        return daysSinceRelease in (MONTH + 1)..0;
     }
 
-    private val dateFilter = { movieRecord: MovieRecord ->
+    private fun upcomingDateFilter(movieRecord: MovieRecord): Boolean {
         val movieDate = LocalDate.parse(movieRecord.releaseDate)
         val dateDelta = Period.between(currentDate, movieDate)
-        if (dateDelta.isNegative) {
-            dateDelta.days < TWO_WEEKS && Math.abs(dateDelta.toTotalMonths()) < 1
-        } else {
-            true
-        }
+        return !dateDelta.isNegative
     }
 
     private fun saveDataToDb(saveAction: ResponseSaveAction) {
@@ -180,14 +195,14 @@ class MoviesDataRepository(
         }
     }
 
-    private fun getMovieGenres(movies: List<MovieRecord>): List<MovieGenreRecord> {
-        return movies.flatMap { movieRecord ->
+    private fun getMovieGenres(movies: List<MovieRecord>?): List<MovieGenreRecord> {
+        return movies?.flatMap { movieRecord ->
             if (movieRecord.genreIds?.isNotEmpty() != false) {
                 movieRecord.genreIds?.map { MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = it) }?.toList() ?: emptyList()
             } else {
                 listOf(MovieGenreRecord(movieId = movieRecord.id ?: Int.MIN_VALUE, genreId = Int.MIN_VALUE))
             }
-        }.toList()
+        }?.toList() ?: emptyList()
     }
 
     private fun extractErrorMessage(response: Response<out Any>?): String {
@@ -206,7 +221,7 @@ class MoviesDataRepository(
 
         override fun onResponse(call: Call<MoviesResponse>?, response: Response<MoviesResponse>?) {
             if (isLoaded(response)) {
-                successfulCallback.invoke(networkState, response)
+                successfulCallback(networkState, response)
             } else {
                 networkState.value = NetworkState.error(extractErrorMessage(response))
             }
@@ -236,7 +251,7 @@ class MoviesDataRepository(
 
     companion object {
         const val UNKNOWN_ERROR = "unknown error happened"
-        const val TWO_WEEKS = 14
+        const val MONTH = -30
         const val DEFAULT_START_PAGE = 1
     }
 }
