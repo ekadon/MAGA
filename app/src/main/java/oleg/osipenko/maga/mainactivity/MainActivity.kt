@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val comingSoonLm = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         list_coming_soon.layoutManager = comingSoonLm
         list_coming_soon.adapter = comingSoonAdapter
+        list_coming_soon.addItemDecoration(ComingSoonMarginItemDecoration(this, R.dimen.margin_material))
 
         pager_now_playing.adapter = nowPlayingAdapter
         pager_now_playing.clipToPadding = false
