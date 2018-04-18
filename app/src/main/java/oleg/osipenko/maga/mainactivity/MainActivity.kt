@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             nowPlayingAdapter.setMovies(it)
             if (it?.isNotEmpty() == true) {
                 val startIndex = it.size * 10
+                pager_now_playing.setPageTransformer(false, null)
                 pager_now_playing.setCurrentItem(startIndex, false)
                 pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
                     override fun transformPage(page: View, position: Float) {
