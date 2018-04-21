@@ -98,13 +98,14 @@ class MoviesDataRepository(
 
     private fun handleSuccessfulNowPlayingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
         val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
-        if (hasMorePages(response)) {
+        val hasMore = hasMorePages(response)
+        if (hasMore) {
             val nextPage = currentPage + 1
             loadNowPlaying(networkState, nextPage) { state, callback -> handleSuccessfulNowPlayingResponse(state, callback) }
         }
         val filteredMovies = response?.body()?.results?.filter { nowPlayingDateFilter(it) }
         val movieGenres = getMovieGenres(filteredMovies)
-        handleResponse(networkState, filteredMovies, { movies ->
+        handleResponse(networkState, hasMore, filteredMovies, { movies ->
 
             val nowPlaying = movies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
@@ -137,13 +138,14 @@ class MoviesDataRepository(
 
     private fun handleSuccessfulUpcomingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
         val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
-        if (hasMorePages(response)) {
+        val hasMore = hasMorePages(response)
+        if (hasMore) {
             val nextPage = currentPage + 1
             loadComingSoon(networkState, nextPage) { state, callback -> handleSuccessfulUpcomingResponse(state, callback) }
         }
         val filteredMovies = response?.body()?.results?.filter { upcomingDateFilter(it) }
         val movieGenres = getMovieGenres(filteredMovies)
-        handleResponse(networkState, filteredMovies, { movies ->
+        handleResponse(networkState, hasMore, filteredMovies, { movies ->
 
             val upcoming = movies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
 
@@ -159,8 +161,10 @@ class MoviesDataRepository(
         })
     }
 
-    private fun handleResponse(networkState: MutableLiveData<NetworkState>, movies: List<MovieRecord>?, block: (List<MovieRecord>) -> Unit) {
-        networkState.postValue(NetworkState.LOADED)
+    private fun handleResponse(networkState: MutableLiveData<NetworkState>, hasMore: Boolean, movies: List<MovieRecord>?, block: (List<MovieRecord>) -> Unit) {
+        if (!hasMore) {
+            networkState.postValue(NetworkState.LOADED)
+        }
         if (movies != null && movies.isNotEmpty()) {
             block.invoke(movies)
         }

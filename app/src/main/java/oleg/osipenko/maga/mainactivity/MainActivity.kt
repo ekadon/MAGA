@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     private fun startObservingMovies(viewModel: MainActivityViewModel) {
         observeNowPlaying(viewModel)
         observeComingSoon(viewModel)
+        observeNowPlayingProgress(viewModel)
     }
 
     private fun observeNowPlaying(viewModel: MainActivityViewModel) {
@@ -118,5 +119,11 @@ class MainActivity : AppCompatActivity() {
                     Html.fromHtml(it),
                     Snackbar.LENGTH_LONG).show()
         }
+    }
+
+    private fun observeNowPlayingProgress(viewModel: MainActivityViewModel) {
+        viewModel.nowPlayingShowProgressBar.observe(this, Observer {
+            progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
+        })
     }
 }
