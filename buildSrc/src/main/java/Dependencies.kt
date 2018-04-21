@@ -1,14 +1,14 @@
 object Versions {
     val androidPlugin = "3.1.0"
-    val kotlin = "1.2.31"
+    val kotlin = "1.2.40"
     val appCompat = "27.1.1"
-    val glide = "4.6.1"
-    val retrofit = "2.3.0"
+    val glide = "4.7.1"
+    val retrofit = "2.4.0"
     val room = "1.0.0"
     val constraintLayout = "1.0.2"
     val logger = "3.9.0"
     val archComponents = "1.1.1"
-    val dagger = "2.14.1"
+    val dagger = "2.15"
     val paging = "1.0.0-alpha7"
     val threeten = "1.0.5"
 
