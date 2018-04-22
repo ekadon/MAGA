@@ -96,10 +96,11 @@ class MainActivity : AppCompatActivity() {
                 pager_now_playing.setCurrentItem(startIndex, false)
                 pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
                     override fun transformPage(page: View, position: Float) {
+                        val shadow = page.findViewById<View>(R.id.shadow)
                         if (position < -0.3 || position > 0.3) {
-                            page.alpha = 0.6f
+                            shadow.visibility = View.VISIBLE
                         } else {
-                            page.alpha = 1f
+                            shadow.visibility = View.INVISIBLE
                         }
                     }
                 })
