@@ -212,6 +212,7 @@ class MoviesDataRepository(
     private fun extractErrorMessage(response: Response<out Any>?): String {
         return if (response?.errorBody() != null) {
             val errorMessage = response.errorBody()?.string()!!
+            response.errorBody()?.close()
             errorMessage
         } else {
             UNKNOWN_ERROR
