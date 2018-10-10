@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "oleg.osipenko.maga"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -47,6 +47,9 @@ dependencies {
     kapt UiDependencies.dataBinding
     implementation UiDependencies.design
     implementation CoreDependencies.threeten
+    implementation CoreDependencies.koin
+    implementation CoreDependencies.koinViewModel
+    implementation CoreDependencies.koinScope
 
     implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
     kapt ArchitectureComponents.lifeCycleCompiler
