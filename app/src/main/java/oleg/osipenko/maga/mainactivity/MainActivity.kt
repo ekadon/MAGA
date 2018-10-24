@@ -14,43 +14,30 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.maga.R
-import oleg.osipenko.maga.data.db.MoviesDb
-import oleg.osipenko.maga.data.network.TMDBApi
-import oleg.osipenko.maga.data.repository.MoviesDataRepository
-import org.koin.android.ext.android.startKoin
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
-import java.util.concurrent.Executors
 
 /**
  * Main activity with movies
  */
 class MainActivity : AppCompatActivity() {
 
-    private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
-    private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
-    private val db by lazy { MoviesDb.create(this) }
-    private val api by lazy { TMDBApi.create(this) }
-    private val activityViewModel: MainActivityViewModel by viewModel()
-
-    private val activityModule = module {
-        single<MoviesRepository>(override = true) {
-            MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
-        }
-
-        viewModel(override = true) {
-            MainActivityViewModel(get() as MoviesRepository)
+    companion object {
+        val activityViewModel = module {
+            viewModel { MainActivityViewModel(get() as MoviesRepository) }
         }
     }
 
+    private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
+    private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
+    private val activityViewModel: MainActivityViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startKoin(applicationContext, listOf(activityModule))
         setContentView(R.layout.activity_main)
 
         initViews()
-//        initViewModel()
         loadConfig()
     }
 
@@ -76,18 +63,6 @@ class MainActivity : AppCompatActivity() {
             resources.getDimensionPixelSize(R.dimen.height_status_bar)
         }
     }
-
-//    private fun initViewModel() {
-//        activityViewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-//            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-//                val db = MoviesDb.create(this@MainActivity)
-//                val api = TMDBApi.create(this@MainActivity)
-//                val repo = MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
-//                @Suppress("UNCHECKED_CAST")
-//                return MainActivityViewModel(repo) as T
-//            }
-//        })[MainActivityViewModel::class.java]
-//    }
 
     private fun loadConfig() {
         activityViewModel.configObservable.observe(this, Observer { config ->
