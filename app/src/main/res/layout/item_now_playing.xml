@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/poster"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@color/placeholder_background_color"
+        tools:src="@tools:sample/avatars"/>
+
+
+    <TextView
+        android:id="@+id/title"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Some pretty good MovieTitle"
+        android:paddingTop="180dp"
+        android:paddingStart="@dimen/margin_material"
+        android:layout_gravity="center_vertical"
+        android:textColor="@android:color/darker_gray"
+        android:textStyle="italic|bold"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:ignore="RtlSymmetry" />
+
+    <View
+        android:id="@+id/shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:visibility="visible"
+        android:visibility="invisible"
+        android:background="@android:drawable/screen_background_dark_transparent"/>
+
+</FrameLayout>
