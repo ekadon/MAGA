@@ -1,9 +1,6 @@
 package oleg.osipenko.maga.mainactivity
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.ViewPager
@@ -15,27 +12,32 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
+import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.maga.R
-import oleg.osipenko.maga.data.db.MoviesDb
-import oleg.osipenko.maga.data.network.TMDBApi
-import oleg.osipenko.maga.data.repository.MoviesDataRepository
-import java.util.concurrent.Executors
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.koin.viewModel
+import org.koin.dsl.module.module
 
 /**
  * Main activity with movies
  */
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        val activityViewModel = module {
+            viewModel { MainActivityViewModel(get() as MoviesRepository) }
+        }
+    }
+
     private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
     private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
-    private lateinit var viewModel: MainActivityViewModel
+    private val activityViewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initViews()
-        initViewModel()
         loadConfig()
     }
 
@@ -62,22 +64,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val db = MoviesDb.create(this@MainActivity)
-                val api = TMDBApi.create(this@MainActivity)
-                val repo = MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
-                @Suppress("UNCHECKED_CAST")
-                return MainActivityViewModel(repo) as T
-            }
-        })[MainActivityViewModel::class.java]
-    }
-
     private fun loadConfig() {
-        viewModel.configObservable.observe(this, Observer { config ->
+        activityViewModel.configObservable.observe(this, Observer { config ->
             comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
-            startObservingMovies(viewModel)
+            startObservingMovies(activityViewModel)
         })
     }
 

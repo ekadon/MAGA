@@ -1,6 +1,6 @@
 object Versions {
     val androidPlugin = "3.1.0"
-    val kotlin = "1.2.61"
+    val kotlin = "1.2.71"
     val appCompat = "27.1.1"
     val glide = "4.8.0"
     val retrofit = "2.4.0"
@@ -11,6 +11,7 @@ object Versions {
     val dagger = "2.17"
     val paging = "1.0.0"
     val threeten = "1.0.5"
+    val koin = "1.0.1"
 
     val junit = "4.12"
     val mockitoKotlin = "1.5.0"
@@ -27,12 +28,10 @@ object GradlePlugins {
 }
 
 object CoreDependencies {
-    val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jre7:${Versions.kotlin}"
-    val dagger = "com.google.dagger:dagger:${Versions.dagger}"
-    val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
-    val daggerAndroid = "com.google.dagger:dagger-android-support:${Versions.dagger}"
-    val daggerAndroidSupport = "com.google.dagger:dagger-android-support:${Versions.dagger}"
-    val daggerAndroidCompiler = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
+    val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
+    val koin = "org.koin:koin-android:${Versions.koin}"
+    val koinViewModel = "org.koin:koin-android-viewmodel:${Versions.koin}"
+    val koinScope = "org.koin:koin-android-scope:${Versions.koin}"
     val threeten = "com.jakewharton.threetenabp:threetenabp:${Versions.threeten}"
 }
 
