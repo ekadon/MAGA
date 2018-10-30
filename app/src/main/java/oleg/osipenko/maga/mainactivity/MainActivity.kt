@@ -3,10 +3,13 @@ package oleg.osipenko.maga.mainactivity
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
+import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -23,98 +26,114 @@ import org.koin.dsl.module.module
  */
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        val activityViewModel = module {
-            viewModel { MainActivityViewModel(get() as MoviesRepository) }
-        }
+  companion object {
+    val activityViewModel = module {
+      viewModel { MainActivityViewModel(get() as MoviesRepository) }
     }
+  }
 
-    private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
-    private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
-    private val activityViewModel: MainActivityViewModel by viewModel()
+  private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
+  private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
+  private val activityViewModel: MainActivityViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
 
-        initViews()
-        loadConfig()
+    initViews()
+    loadConfig()
+  }
+
+  private fun initViews() {
+    window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+    val comingSoonLm = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+    list_coming_soon.layoutManager = comingSoonLm
+    list_coming_soon.adapter = comingSoonAdapter
+    list_coming_soon.addItemDecoration(ComingSoonMarginItemDecoration(this, R.dimen.margin_material))
+
+    pager_now_playing.adapter = nowPlayingAdapter
+    pager_now_playing.clipToPadding = false
+    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+    setSupportActionBar(toolbar)
+    val actionbar: ActionBar? = supportActionBar
+    actionbar?.apply {
+      setDisplayHomeAsUpEnabled(true)
+      setHomeAsUpIndicator(R.drawable.ic_kebab)
     }
+  }
 
-    private fun initViews() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        val comingSoonLm = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        list_coming_soon.layoutManager = comingSoonLm
-        list_coming_soon.adapter = comingSoonAdapter
-        list_coming_soon.addItemDecoration(ComingSoonMarginItemDecoration(this, R.dimen.margin_material))
+  private fun getStatusBarHeight(): Int {
+    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
 
-        pager_now_playing.adapter = nowPlayingAdapter
-        pager_now_playing.clipToPadding = false
-        (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
-        (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+    return if (resourceId > 0) {
+      resources.getDimensionPixelSize(resourceId)
+    } else {
+      resources.getDimensionPixelSize(R.dimen.height_status_bar)
     }
+  }
 
-    private fun getStatusBarHeight(): Int {
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+  private fun loadConfig() {
+    activityViewModel.configObservable.observe(this, Observer { config ->
+      comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
+      startObservingMovies(activityViewModel)
+    })
+  }
 
-        return if (resourceId > 0) {
-            resources.getDimensionPixelSize(resourceId)
-        } else {
-            resources.getDimensionPixelSize(R.dimen.height_status_bar)
-        }
-    }
+  private fun startObservingMovies(viewModel: MainActivityViewModel) {
+    observeNowPlaying(viewModel)
+    observeComingSoon(viewModel)
+    observeNowPlayingProgress(viewModel)
+  }
 
-    private fun loadConfig() {
-        activityViewModel.configObservable.observe(this, Observer { config ->
-            comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
-            startObservingMovies(activityViewModel)
-        })
-    }
-
-    private fun startObservingMovies(viewModel: MainActivityViewModel) {
-        observeNowPlaying(viewModel)
-        observeComingSoon(viewModel)
-        observeNowPlayingProgress(viewModel)
-    }
-
-    private fun observeNowPlaying(viewModel: MainActivityViewModel) {
-        viewModel.nowPlayingMovies.observe(this, Observer {
-            nowPlayingAdapter.setMovies(it)
-            if (it?.isNotEmpty() == true) {
-                val startIndex = it.size * 10
-                pager_now_playing.setPageTransformer(false, null)
-                pager_now_playing.setCurrentItem(startIndex, false)
-                pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
-                    override fun transformPage(page: View, position: Float) {
-                        val shadow = page.findViewById<View>(R.id.shadow)
-                        if (position < -0.3 || position > 0.3) {
-                            shadow.visibility = View.VISIBLE
-                        } else {
-                            shadow.visibility = View.INVISIBLE
-                        }
-                    }
-                })
+  private fun observeNowPlaying(viewModel: MainActivityViewModel) {
+    viewModel.nowPlayingMovies.observe(this, Observer {
+      nowPlayingAdapter.setMovies(it)
+      if (it?.isNotEmpty() == true) {
+        val startIndex = it.size * 10
+        pager_now_playing.setPageTransformer(false, null)
+        pager_now_playing.setCurrentItem(startIndex, false)
+        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
+          override fun transformPage(page: View, position: Float) {
+            val shadow = page.findViewById<View>(R.id.shadow)
+            if (position < -0.3 || position > 0.3) {
+              shadow.visibility = View.VISIBLE
+            } else {
+              shadow.visibility = View.INVISIBLE
             }
+          }
         })
-        viewModel.nowPlayingErrorMessage.observe(this, errorObserver)
-    }
+      }
+    })
+    viewModel.nowPlayingErrorMessage.observe(this, errorObserver)
+  }
 
-    private fun observeComingSoon(viewModel: MainActivityViewModel) {
-        viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
-        viewModel.comingSoonErrorMessage.observe(this, errorObserver)
-    }
+  private fun observeComingSoon(viewModel: MainActivityViewModel) {
+    viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
+    viewModel.comingSoonErrorMessage.observe(this, errorObserver)
+  }
 
-    private val errorObserver = Observer<String?> {
-        it?.let {
-            Snackbar.make(list_coming_soon,
-                    Html.fromHtml(it),
-                    Snackbar.LENGTH_LONG).show()
-        }
+  private val errorObserver = Observer<String?> {
+    it?.let {
+      Snackbar.make(
+          list_coming_soon, Html.fromHtml(it), Snackbar.LENGTH_LONG
+      ).show()
     }
+  }
 
-    private fun observeNowPlayingProgress(viewModel: MainActivityViewModel) {
-        viewModel.nowPlayingShowProgressBar.observe(this, Observer {
-            progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
-        })
+  private fun observeNowPlayingProgress(viewModel: MainActivityViewModel) {
+    viewModel.nowPlayingShowProgressBar.observe(this, Observer {
+      progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
+    })
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return when (item.itemId) {
+      android.R.id.home -> {
+        drawer.openDrawer(GravityCompat.START)
+        true
+      }
+      else -> super.onOptionsItemSelected(item)
     }
+  }
 }
