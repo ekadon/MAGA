@@ -7,5 +7,5 @@
     <dimen name="height_coming_soon">140dp</dimen>
     <dimen name="width_coming_soon">93dp</dimen>
     <dimen name="height_status_bar">25dp</dimen>
-    <dimen name="height_pager">400dp</dimen>
+    <dimen name="height_pager">460dp</dimen>
 </resources>
