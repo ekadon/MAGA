@@ -39,12 +39,15 @@
     android:layout_height="48dp"
     android:layout_gravity="bottom"
     android:ellipsize="end"
+    android:fontFamily="sans-serif-condensed"
     android:gravity="center_vertical"
     android:maxLines="1"
     android:textColor="@android:color/white"
     android:textSize="@dimen/text_size_1"
+    android:visibility="invisible"
     tools:ignore="RtlSymmetry"
     tools:text="@string/title_now_playing"
+    tools:visibility="visible"
     />
 
 </FrameLayout>
