@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
@@ -70,10 +69,11 @@ class MainActivity : AppCompatActivity() {
     (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
     (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
     setSupportActionBar(toolbar)
-    val actionbar: ActionBar? = supportActionBar
-    actionbar?.apply {
+
+    supportActionBar?.apply {
       setDisplayHomeAsUpEnabled(true)
       setHomeAsUpIndicator(R.drawable.ic_kebab)
+      setTitle(R.string.title_now_playing)
     }
   }
 
@@ -110,10 +110,13 @@ class MainActivity : AppCompatActivity() {
         pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
           override fun transformPage(page: View, position: Float) {
             val shadow = page.findViewById<View>(R.id.shadow)
+            val title = page.findViewById<View>(R.id.movie_title)
             if (position < -0.3 || position > 0.3) {
               shadow.visibility = View.VISIBLE
+              title.visibility = View.INVISIBLE
             } else {
               shadow.visibility = View.INVISIBLE
+              title.visibility = View.VISIBLE
             }
           }
         })

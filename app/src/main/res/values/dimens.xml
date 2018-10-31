@@ -8,4 +8,5 @@
     <dimen name="width_coming_soon">93dp</dimen>
     <dimen name="height_status_bar">25dp</dimen>
     <dimen name="height_pager">460dp</dimen>
+  <dimen name="height_shader">80dp</dimen>
 </resources>

@@ -55,7 +55,7 @@ class NowPlayingFragment : Fragment() {
             }
         })[MainActivityViewModel::class.java]
 
-        title.text = arguments?.getString(TITLE)
+        movie_title.text = arguments?.getString(TITLE)
 
         viewModel.configObservable.observe(this, Observer {
             val url = arguments?.getString(IMAGE_URL) ?: ""
@@ -67,8 +67,7 @@ class NowPlayingFragment : Fragment() {
                         .thumbnail(0.2f)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                                displayTitle()
-                                poster.setImageResource(R.drawable.placeholder)
+                                movie_poster.setImageResource(R.drawable.placeholder)
                                 return true
                             }
 
@@ -76,7 +75,7 @@ class NowPlayingFragment : Fragment() {
                                 return false
                             }
                         })
-                        .into(poster)
+                        .into(movie_poster)
             }
         })
     }
@@ -106,9 +105,5 @@ class NowPlayingFragment : Fragment() {
 
     private fun getImageWidth(): Int {
         return (resources.displayMetrics.widthPixels - resources.getDimension(R.dimen.margin_material) * 2).toInt()
-    }
-
-    private fun displayTitle() {
-        title.visibility = View.VISIBLE
     }
 }
