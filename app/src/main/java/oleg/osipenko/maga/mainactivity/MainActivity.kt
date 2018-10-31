@@ -7,6 +7,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.MenuItem
@@ -14,11 +15,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import kotlinx.android.synthetic.main.activity_main.*
+import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.maga.R
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.android.viewmodel.ext.koin.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module.module
 
 /**
@@ -27,13 +33,21 @@ import org.koin.dsl.module.module
 class MainActivity : AppCompatActivity() {
 
   companion object {
-    val activityViewModel = module {
+    val activityModel = module {
       viewModel { MainActivityViewModel(get() as MoviesRepository) }
+
+      single { Glide.with(androidContext()) }
+
+      single<DiffUtil.ItemCallback<Movie>> { ComingSoonAdapter.MovieDiffCallback() }
+
+      single { ComingSoonAdapter(get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>) }
+
+      single { (activity: AppCompatActivity) -> NowPlayingAdapter(activity) }
     }
   }
 
-  private val comingSoonAdapter by lazy { ComingSoonAdapter(Glide.with(this), ComingSoonAdapter.MovieDiffCallback()) }
-  private val nowPlayingAdapter by lazy { NowPlayingAdapter(supportFragmentManager) }
+  private val comingSoonAdapter: ComingSoonAdapter by inject()
+  private val nowPlayingAdapter: NowPlayingAdapter by inject { parametersOf(this@MainActivity) }
   private val activityViewModel: MainActivityViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         drawer.openDrawer(GravityCompat.START)
         true
       }
-      else -> super.onOptionsItemSelected(item)
+      else              -> super.onOptionsItemSelected(item)
     }
   }
 }

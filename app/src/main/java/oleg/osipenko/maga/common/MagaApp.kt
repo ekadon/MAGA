@@ -7,10 +7,10 @@ import oleg.osipenko.maga.mainactivity.MainActivity
 import org.koin.android.ext.android.startKoin
 
 class MagaApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        AndroidThreeTen.init(this)
+  override fun onCreate() {
+    super.onCreate()
+    AndroidThreeTen.init(this)
 
-        startKoin(this, listOf(dataModule, MainActivity.activityViewModel))
-    }
+    startKoin(this, listOf(dataModule, MainActivity.activityModel))
+  }
 }
