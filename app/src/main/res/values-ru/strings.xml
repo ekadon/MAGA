@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">MAGA</string>
+  <string name="title_now_playing">СЕЙЧАС В КИНОТЕАТРАХ</string>
+  <string name="title_coming_soon">Скоро на экранах</string>
+</resources>
