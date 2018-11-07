@@ -1,5 +1,6 @@
 package oleg.osipenko.maga.mainactivity
 
+import android.graphics.drawable.Drawable
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.text.TextUtils
@@ -7,6 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.item_coming_soon.view.*
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.maga.R
@@ -40,7 +45,18 @@ class ComingSoonAdapter(
 
         fun bind(glide: RequestManager, url: String) {
             if (!TextUtils.isEmpty(baseUrl) && sizes.isNotEmpty()) {
-                glide.load(getImageUrl(url)).thumbnail(0.2f).into(itemView.poster)
+                glide.load(getImageUrl(url)).thumbnail(0.2f).listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        itemView.poster.setImageResource(R.drawable.placeholder)
+                        return true
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
+                }).into(itemView.poster)
             }
         }
     }
