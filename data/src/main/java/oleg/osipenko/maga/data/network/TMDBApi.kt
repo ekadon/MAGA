@@ -11,7 +11,6 @@ import oleg.osipenko.maga.data.BuildConfig
 import oleg.osipenko.maga.data.network.dto.ApiConfigurationResponse
 import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -74,14 +73,14 @@ interface TMDBApi {
    * https://developers.themoviedb.org/3/movies/get-now-playing
    */
   @GET("/3/movie/now_playing")
-  fun getNowPlaying(@Query(PAGE) page: Int): Call<MoviesResponse>
+  fun getNowPlaying(@Query(PAGE) page: Int): Deferred<MoviesResponse>
 
   /**
    * Returns the list of upcoming videos
    * https://developers.themoviedb.org/3/movies/get-upcoming
    */
   @GET("/3/movie/upcoming")
-  fun getUpcoming(@Query(PAGE) page: Int): Call<MoviesResponse>
+  fun getUpcoming(@Query(PAGE) page: Int): Deferred<MoviesResponse>
 
   /**
    * Retrieves the list of genres

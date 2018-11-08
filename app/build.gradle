@@ -39,6 +39,8 @@ dependencies {
     def androidGroup = 'com.android.support'
 
     implementation CoreDependencies.kotlin
+    implementation CoreDependencies.coroutines
+    implementation CoreDependencies.coroutinesAndroid
     implementation UiDependencies.appCompat
     implementation(UiDependencies.glide) { exclude group: androidGroup }
     kapt UiDependencies.glideCompiler
