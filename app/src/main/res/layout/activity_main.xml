@@ -6,6 +6,7 @@
   android:id="@+id/drawer"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  tools:openDrawer="start"
   tools:context="oleg.osipenko.maga.mainactivity.MainActivity"
   >
 
@@ -95,11 +96,12 @@
   </android.support.constraint.ConstraintLayout>
   
   <android.support.design.widget.NavigationView
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
     app:menu="@menu/navigation"
     app:itemTextColor="@android:color/white"
+    app:headerLayout="@layout/header_navigation"
     />
 
 </android.support.v4.widget.DrawerLayout>

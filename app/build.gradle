@@ -50,6 +50,7 @@ dependencies {
     implementation CoreDependencies.koin
     implementation CoreDependencies.koinViewModel
     implementation CoreDependencies.koinScope
+    implementation UiDependencies.circleImageView
 
     implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
     kapt ArchitectureComponents.lifeCycleCompiler
