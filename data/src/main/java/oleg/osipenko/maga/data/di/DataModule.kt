@@ -10,13 +10,13 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 val dataModule = module {
-    single { TMDBApi.create(androidContext()) }
+  single { TMDBApi.create(androidContext()) }
 
-    single { MoviesDb.create(androidContext()) }
+  single { MoviesDb.create(androidContext()) }
 
-    single<Executor> { Executors.newFixedThreadPool(5) }
+  single<Executor> { Executors.newFixedThreadPool(5) }
 
-    single<MoviesRepository> {
-        MoviesDataRepository(get<MoviesDb>(), get() as TMDBApi, get() as Executor)
-    }
+  single<MoviesRepository> {
+    MoviesDataRepository(get(), get(), get())
+  }
 }

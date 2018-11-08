@@ -42,7 +42,10 @@ dependencies {
     def androidGroup = 'com.android.support'
 
     implementation CoreDependencies.kotlin
+    implementation CoreDependencies.coroutines
+    implementation CoreDependencies.coroutinesAndroid
     implementation DataDependencies.retrofit
+    implementation DataDependencies.coroutinesAdapter
     implementation DataDependencies.retrofitGson
     implementation DataDependencies.logger
     implementation CoreDependencies.threeten

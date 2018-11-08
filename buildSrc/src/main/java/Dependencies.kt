@@ -13,6 +13,8 @@ object Versions {
   val threeten = "1.0.5"
   val koin = "1.0.1"
   val circleImageView = "2.2.0"
+  val coroutinesAdapter = "0.9.2"
+  val coroutines = "1.0.0"
 
   val junit = "4.12"
   val mockitoKotlin = "1.5.0"
@@ -34,6 +36,8 @@ object CoreDependencies {
   val koinViewModel = "org.koin:koin-android-viewmodel:${Versions.koin}"
   val koinScope = "org.koin:koin-android-scope:${Versions.koin}"
   val threeten = "com.jakewharton.threetenabp:threetenabp:${Versions.threeten}"
+  val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
+  val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
 }
 
 object UiDependencies {
@@ -58,6 +62,7 @@ object DataDependencies {
   val roomCompiler = "android.arch.persistence.room:compiler:${Versions.room}"
   val logger = "com.squareup.okhttp3:logging-interceptor:${Versions.logger}"
   val paging = "android.arch.paging:runtime:${Versions.paging}"
+  val coroutinesAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.coroutinesAdapter}"
 }
 
 object ArchitectureComponents {
