@@ -48,7 +48,7 @@ class MoviesDataRepository(
       db.runInTransaction {
         db.configDao().deleteAll()
         db.configDao()
-            .insertConfiguration(ConfigurationRecord(1, imagesResponse.secureBaseUrl, imagesResponse.posterSizes, imagesResponse.backdropSizes))
+          .insertConfiguration(ConfigurationRecord(1, imagesResponse.secureBaseUrl, imagesResponse.posterSizes, imagesResponse.backdropSizes))
       }
     }
   }
@@ -76,33 +76,37 @@ class MoviesDataRepository(
     loadMovies(api.getNowPlaying(page), MoviesCallback(networkState, successfulCallback))
   }
 
-  private fun loadMovies(call: Call<MoviesResponse>, callback: MoviesCallback) {
-    call.enqueue(callback)
-  }
+  private suspend fun loadNowPlaying(page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()) {
+    val nowPlayingResponse = api.getNowPlaying(page).await()
 
   private fun handleSuccessfulNowPlayingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
     val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
     val hasMore = hasMorePages(response)
+    val combinedResults = loadedMovies + (nowPlayingResponse.results ?: emptyList())
     if (hasMore) {
       val nextPage = currentPage + 1
-      loadNowPlaying(networkState, nextPage) { state, callback -> handleSuccessfulNowPlayingResponse(state, callback) }
-    }
-    val filteredMovies = response?.body()?.results?.filter { nowPlayingDateFilter(it) }
-    val movieGenres = getMovieGenres(filteredMovies)
-    handleResponse(networkState, hasMore, filteredMovies, { movies ->
+      loadNowPlaying(nextPage, combinedResults)
+    } else {
+      // filter old movies
+      val filteredMovies = combinedResults.filter { nowPlayingDateFilter(it) }
+
+      // get genres
+      val movieGenres = getMovieGenres(filteredMovies)
 
       val nowPlaying = movies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
-      saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
-        override fun run() {
-          super.run()
+        val nowPlaying = filteredMovies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
+
+        db.runInTransaction {
+          db.moviesDao().insertMovies(filteredMovies)
+          db.movieGenresDao().insertMovieGenres(movieGenres)
           if (currentPage == DEFAULT_START_PAGE) {
             db.nowPlayingDao().deleteAll()
           }
           db.nowPlayingDao().saveNowPlaying(nowPlaying)
         }
-      })
-    })
+      }
+    }
   }
 
   override fun comingSoon(): MoviesDataState<List<Movie>> {
@@ -122,36 +126,37 @@ class MoviesDataRepository(
     loadMovies(api.getUpcoming(page), MoviesCallback(networkState, successfulCallback))
   }
 
-  private fun handleSuccessfulUpcomingResponse(networkState: MutableLiveData<NetworkState>, response: Response<MoviesResponse>?) {
-    val currentPage = response?.body()?.page ?: DEFAULT_START_PAGE
-    val hasMore = hasMorePages(response)
+  private suspend fun loadComingSoon(page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()) {
+    val upcomingResponse = api.getUpcoming(page).await()
+
+    // load next pages if more
+    val currentPage = upcomingResponse.page ?: DEFAULT_START_PAGE
+    val hasMore = hasMorePages(upcomingResponse)
+    val combinedResults = loadedMovies + (upcomingResponse.results ?: emptyList())
+
     if (hasMore) {
       val nextPage = currentPage + 1
-      loadComingSoon(networkState, nextPage) { state, callback -> handleSuccessfulUpcomingResponse(state, callback) }
-    }
-    val filteredMovies = response?.body()?.results?.filter { upcomingDateFilter(it) }
-    val movieGenres = getMovieGenres(filteredMovies)
-    handleResponse(networkState, hasMore, filteredMovies, { movies ->
+      loadComingSoon(nextPage, combinedResults)
+    } else {
+      // filter old movies
+      val filteredMovies = combinedResults.filter { upcomingDateFilter(it) }
+
+      // get genres
+      val movieGenres = getMovieGenres(filteredMovies)
 
       val upcoming = movies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
 
-      saveDataToDb(object : ResponseSaveAction(movies, movieGenres) {
-        override fun run() {
-          super.run()
+        val upcoming = filteredMovies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
+
+        db.runInTransaction {
+          db.moviesDao().insertMovies(filteredMovies)
+          db.movieGenresDao().insertMovieGenres(movieGenres)
           if (currentPage == DEFAULT_START_PAGE) {
             db.upcomingDao().deleteAll()
           }
           db.upcomingDao().saveUpcoming(upcoming)
         }
-      })
-    })
-  }
-
-  private fun handleResponse(
-      networkState: MutableLiveData<NetworkState>, hasMore: Boolean, movies: List<MovieRecord>?, block: (List<MovieRecord>) -> Unit
-  ) {
-    if (!hasMore) {
-      networkState.postValue(NetworkState.LOADED)
+      }
     }
     if (movies != null && movies.isNotEmpty()) {
       block.invoke(movies)

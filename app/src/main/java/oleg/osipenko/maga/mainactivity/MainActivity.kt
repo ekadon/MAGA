@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity() {
 
       single<DiffUtil.ItemCallback<Movie>> { ComingSoonAdapter.MovieDiffCallback() }
 
-      single { ComingSoonAdapter(get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>) }
+      factory { ComingSoonAdapter(get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>) }
 
-      single { (activity: AppCompatActivity) -> NowPlayingAdapter(activity) }
+      factory { (activity: AppCompatActivity) -> NowPlayingAdapter(activity) }
     }
   }
 
@@ -91,18 +91,24 @@ class MainActivity : AppCompatActivity() {
   private fun loadConfig() {
     activityViewModel.configObservable.observe(this, Observer { config ->
       comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
-      startObservingMovies(activityViewModel)
     })
+    activityViewModel.refreshNowPlaying()
+    activityViewModel.refreshUpcoming()
   }
 
-  private fun startObservingMovies(viewModel: MainActivityViewModel) {
-    observeNowPlaying(viewModel)
-    observeComingSoon(viewModel)
-    observeNowPlayingProgress(viewModel)
+  override fun onStart() {
+    super.onStart()
+    startObservingMovies()
   }
 
-  private fun observeNowPlaying(viewModel: MainActivityViewModel) {
-    viewModel.nowPlayingMovies.observe(this, Observer {
+  private fun startObservingMovies() {
+    observeNowPlaying()
+    observeComingSoon()
+    observeNowPlayingProgress()
+  }
+
+  private fun observeNowPlaying() {
+    activityViewModel.nowPlayingMovies.observe(this, Observer {
       nowPlayingAdapter.setMovies(it)
       if (it?.isNotEmpty() == true) {
         val startIndex = it.size * 10
@@ -123,12 +129,12 @@ class MainActivity : AppCompatActivity() {
         })
       }
     })
-    viewModel.nowPlayingErrorMessage.observe(this, errorObserver)
+    activityViewModel.error.observe(this, errorObserver)
   }
 
-  private fun observeComingSoon(viewModel: MainActivityViewModel) {
-    viewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
-    viewModel.comingSoonErrorMessage.observe(this, errorObserver)
+  private fun observeComingSoon() {
+    activityViewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
+    activityViewModel.error.observe(this, errorObserver)
   }
 
   private val errorObserver = Observer<String?> {
@@ -139,8 +145,8 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun observeNowPlayingProgress(viewModel: MainActivityViewModel) {
-    viewModel.nowPlayingShowProgressBar.observe(this, Observer {
+  private fun observeNowPlayingProgress() {
+    activityViewModel.nowPlayingShowProgressBar.observe(this, Observer {
       progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
     })
   }
