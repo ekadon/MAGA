@@ -39,12 +39,14 @@ dependencies {
     def androidGroup = 'com.android.support'
 
     implementation CoreDependencies.kotlin
+    implementation CoreDependencies.coroutines
+    implementation CoreDependencies.coroutinesAndroid
     implementation UiDependencies.appCompat
     implementation(UiDependencies.glide) { exclude group: androidGroup }
     kapt UiDependencies.glideCompiler
     implementation UiDependencies.constraintLayout
     implementation UiDependencies.recyclerView
-    kapt UiDependencies.dataBinding
+    //kapt UiDependencies.dataBinding
     implementation UiDependencies.design
     implementation CoreDependencies.threeten
     implementation CoreDependencies.koin

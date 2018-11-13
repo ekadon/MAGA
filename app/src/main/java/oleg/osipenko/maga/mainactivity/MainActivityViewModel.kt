@@ -1,26 +1,62 @@
 package oleg.osipenko.maga.mainactivity
 
-import android.arch.lifecycle.Transformations
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import oleg.osipenko.domain.entities.Movie
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import oleg.osipenko.domain.repository.MoviesRepository
-import oleg.osipenko.domain.states.MoviesDataState
-import oleg.osipenko.domain.states.Status
 
 /**
  * View model for [MainActivity]
  */
-class MainActivityViewModel(repository: MoviesRepository): ViewModel() {
-    private val nowPlayingObservable: MoviesDataState<List<Movie>> = repository.nowPlaying()
-    private val nowPlayingNetworkState = nowPlayingObservable.networkState
-    private val comingSoonObservable: MoviesDataState<List<Movie>> = repository.comingSoon()
-    private val comingSoonNetworkState = comingSoonObservable.networkState
+class MainActivityViewModel(private val repository: MoviesRepository) : ViewModel() {
 
-    val nowPlayingMovies = nowPlayingObservable.movies
-    val nowPlayingShowProgressBar = Transformations.map(comingSoonNetworkState) { it?.status == Status.RUNNING }
-    val nowPlayingErrorMessage = Transformations.map(comingSoonNetworkState, { it.throwableMessage })
-    val comingSoonMovies = comingSoonObservable.movies
-    val comingSoonShowProgressBar = Transformations.map(comingSoonNetworkState) { it?.status == Status.RUNNING }
-    val comingSoonErrorMessage = Transformations.map(comingSoonNetworkState, { it.throwableMessage })
-    val configObservable = repository.configuration()
+  private val _nowPlayingProgress = MutableLiveData<Boolean>()
+  private val _upcomingProgress = MutableLiveData<Boolean>()
+  private val _error = MutableLiveData<String?>()
+  private val viewModelJob = Job()
+  private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+  val nowPlayingMovies = repository.nowPlaying()
+  val nowPlayingShowProgressBar: LiveData<Boolean>
+    get() = _nowPlayingProgress
+  val error: LiveData<String?>
+    get() = _error
+  val comingSoonMovies = repository.comingSoon()
+  val comingSoonShowProgressBar: LiveData<Boolean>
+    get() = _upcomingProgress
+  val configObservable = repository.configuration()
+
+  fun refreshNowPlaying() {
+    launchDataLoad(_nowPlayingProgress) {
+      repository.refreshNowPlaying()
+    }
+  }
+
+  fun refreshUpcoming() {
+    launchDataLoad(_upcomingProgress) {
+      repository.refreshComingSoon()
+    }
+  }
+
+  private fun launchDataLoad(progress: MutableLiveData<Boolean>, block: suspend () -> Unit): Job {
+    return uiScope.launch {
+      try {
+        progress.value = true
+        block()
+      } catch (error: Exception) {
+        _error.value = error.message
+      } finally {
+        progress.value = false
+      }
+    }
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    viewModelJob.cancel()
+  }
 }

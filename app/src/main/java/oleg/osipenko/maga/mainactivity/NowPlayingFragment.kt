@@ -21,7 +21,6 @@ import oleg.osipenko.maga.R
 import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.repository.MoviesDataRepository
-import java.util.concurrent.Executors
 
 class NowPlayingFragment : Fragment() {
 
@@ -49,7 +48,7 @@ class NowPlayingFragment : Fragment() {
       override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val db = MoviesDb.create(context!!)
         val api = TMDBApi.create(context!!)
-        val repo = MoviesDataRepository(db, api, Executors.newFixedThreadPool(5))
+        val repo = MoviesDataRepository(db, api)
         @Suppress("UNCHECKED_CAST") return MainActivityViewModel(repo) as T
       }
     })[MainActivityViewModel::class.java]
@@ -87,7 +86,7 @@ class NowPlayingFragment : Fragment() {
     var closest = ""
 
     for (v in sizes) {
-      if (v.equals(MovieBaseHolder.ORIGINAL)) break
+      if (v == MovieBaseHolder.ORIGINAL) break
       val intValue = v.replaceFirst(MovieBaseHolder.W_PREFIX, "", true).toInt()
       val diff = Math.abs(intValue - getImageWidth())
 
