@@ -86,7 +86,7 @@ class NowPlayingFragment : Fragment() {
     var closest = ""
 
     for (v in sizes) {
-      if (v.equals(MovieBaseHolder.ORIGINAL)) break
+      if (v == MovieBaseHolder.ORIGINAL) break
       val intValue = v.replaceFirst(MovieBaseHolder.W_PREFIX, "", true).toInt()
       val diff = Math.abs(intValue - getImageWidth())
 

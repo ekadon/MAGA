@@ -3,7 +3,7 @@ package oleg.osipenko.maga.mainactivity
 import android.support.v7.widget.RecyclerView
 import android.view.View
 
-abstract class MovieBaseHolder(itemView: View?,
+abstract class MovieBaseHolder(itemView: View,
                                protected val baseUrl: String,
                                protected val sizes: List<String>) : RecyclerView.ViewHolder(itemView) {
     companion object {

@@ -1,14 +1,13 @@
 object Versions {
-  val androidPlugin = "3.1.0"
+  val androidPlugin = "3.3.0-beta03"
   val kotlin = "1.3.0"
-  val appCompat = "27.1.1"
+  val appCompat = "28.0.0"
   val glide = "4.8.0"
   val retrofit = "2.4.0"
-  val room = "1.0.0"
+  val room = "1.1.1"
   val constraintLayout = "1.1.3"
   val logger = "3.9.0"
   val archComponents = "1.1.1"
-  val dagger = "2.17"
   val paging = "1.0.0"
   val threeten = "1.0.5"
   val koin = "1.0.1"
@@ -20,9 +19,9 @@ object Versions {
   val mockitoKotlin = "1.5.0"
   val mockito = "2.12.0"
   val robolectric = "3.4.2"
-  val runner = "1.0.1"
+  val runner = "1.0.2"
   val rules = "1.0.1"
-  val espresso = "3.0.1"
+  val espresso = "3.0.2"
 }
 
 object GradlePlugins {
