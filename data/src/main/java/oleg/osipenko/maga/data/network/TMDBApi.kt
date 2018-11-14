@@ -54,10 +54,18 @@ interface TMDBApi {
       val cacheSize = 10 * 1024 * 1024L
       val cache = Cache(context.cacheDir, cacheSize)
 
-      val client = OkHttpClient.Builder().addInterceptor(logger).addInterceptor(paramInterceptor).cache(cache).build()
+      val client = OkHttpClient.Builder()
+        .addInterceptor(logger)
+        .addInterceptor(paramInterceptor)
+        .cache(cache).build()
 
-      return Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
-          .addCallAdapterFactory(CoroutineCallAdapterFactory()).client(client).build().create(TMDBApi::class.java)
+      return Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .client(client)
+        .build()
+        .create(TMDBApi::class.java)
     }
   }
 
