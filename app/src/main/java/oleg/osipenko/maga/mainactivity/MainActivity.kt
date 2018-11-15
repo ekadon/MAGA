@@ -92,8 +92,6 @@ class MainActivity : AppCompatActivity() {
     activityViewModel.configObservable.observe(this, Observer { config ->
       comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
     })
-    activityViewModel.refreshNowPlaying()
-    activityViewModel.refreshUpcoming()
   }
 
   override fun onStart() {
@@ -129,12 +127,12 @@ class MainActivity : AppCompatActivity() {
         })
       }
     })
-    activityViewModel.error.observe(this, errorObserver)
+    activityViewModel.nowPlayingErrorMessage.observe(this, errorObserver)
   }
 
   private fun observeComingSoon() {
     activityViewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
-    activityViewModel.error.observe(this, errorObserver)
+    activityViewModel.comingSoonErrorMessage.observe(this, errorObserver)
   }
 
   private val errorObserver = Observer<String?> {

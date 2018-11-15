@@ -1,14 +1,16 @@
 package oleg.osipenko.maga.data.repository
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import oleg.osipenko.domain.entities.Configuration
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.repository.MoviesRepository
+import oleg.osipenko.domain.states.MoviesDataState
+import oleg.osipenko.domain.states.NetworkState
 import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.entities.*
 import oleg.osipenko.maga.data.network.TMDBApi
@@ -24,7 +26,7 @@ class MoviesDataRepository(
   private var currentDate: LocalDate = LocalDate.now()
 
   init {
-    GlobalScope.launch {
+    GlobalScope.launch(Dispatchers.IO) {
       loadGenres()
       loadConfiguration()
     }
@@ -54,83 +56,109 @@ class MoviesDataRepository(
     }
   }
 
-  override fun nowPlaying(): LiveData<List<Movie>> {
-    return Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map(movieMapper) ?: emptyList() }
+  override fun nowPlaying(): MoviesDataState<List<Movie>> {
+    val networkState = MutableLiveData<NetworkState>()
+    networkState.value = NetworkState.LOADING
+
+    refreshNowPlaying(networkState)
+
+    return MoviesDataState(Transformations.map(db.nowPlayingDao().nowPlaying) { it?.map(movieMapper) ?: emptyList() }, networkState)
   }
 
-  override suspend fun refreshNowPlaying() {
-    withContext(Dispatchers.IO) {
-      loadNowPlaying()
+  private fun refreshNowPlaying(networkState: MutableLiveData<NetworkState>) {
+    GlobalScope.launch(Dispatchers.IO) {
+      loadNowPlaying(networkState)
     }
   }
 
-  private suspend fun loadNowPlaying(page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()) {
-    val nowPlayingResponse = api.getNowPlaying(page).await()
+  private suspend fun loadNowPlaying(
+      networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()
+  ) {
+    try {
+      val nowPlayingResponse = api.getNowPlaying(page).await()
 
-    val currentPage = nowPlayingResponse.page ?: DEFAULT_START_PAGE
-    val hasMore = hasMorePages(nowPlayingResponse)
-    val combinedResults = loadedMovies + (nowPlayingResponse.results ?: emptyList())
-    if (hasMore) {
-      val nextPage = currentPage + 1
-      loadNowPlaying(nextPage, combinedResults)
-    } else {
-      // filter old movies
-      val filteredMovies = combinedResults.filter { nowPlayingDateFilter(it) }
+      val currentPage = nowPlayingResponse.page ?: DEFAULT_START_PAGE
+      val hasMore = hasMorePages(nowPlayingResponse)
+      val combinedResults = loadedMovies + (nowPlayingResponse.results ?: emptyList())
+      if (hasMore) {
+        val nextPage = currentPage + 1
+        loadNowPlaying(networkState, nextPage, combinedResults)
+      } else {
+        // filter old movies
+        val filteredMovies = combinedResults.filter { nowPlayingDateFilter(it) }
 
-      // get genres
-      val movieGenres = getMovieGenres(filteredMovies)
+        // get genres
+        val movieGenres = getMovieGenres(filteredMovies)
 
-      val nowPlaying = filteredMovies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
+        val nowPlaying = filteredMovies.map { NowPlaying(it.id ?: Int.MIN_VALUE) }
 
-      db.runInTransaction {
-        db.moviesDao().insertMovies(filteredMovies)
-        db.movieGenresDao().insertMovieGenres(movieGenres)
-        if (currentPage == DEFAULT_START_PAGE) {
-          db.nowPlayingDao().deleteAll()
+        db.runInTransaction {
+          db.moviesDao().insertMovies(filteredMovies)
+          db.movieGenresDao().insertMovieGenres(movieGenres)
+          if (currentPage == DEFAULT_START_PAGE) {
+            db.nowPlayingDao().deleteAll()
+          }
+          db.nowPlayingDao().saveNowPlaying(nowPlaying)
         }
-        db.nowPlayingDao().saveNowPlaying(nowPlaying)
+        networkState.postValue(NetworkState.LOADED)
       }
+    } catch (e: Exception) {
+      networkState.postValue(NetworkState.error(e.message))
     }
   }
 
-  override fun comingSoon(): LiveData<List<Movie>> {
-    return Transformations.map(db.upcomingDao().upcoming) { it?.map(movieMapper) ?: emptyList() }
+  override fun comingSoon(): MoviesDataState<List<Movie>> {
+    val networkState = MutableLiveData<NetworkState>()
+    networkState.value = NetworkState.LOADING
+
+    refreshComingSoon(networkState)
+
+    return MoviesDataState(
+        Transformations.map(db.upcomingDao().upcoming) { it?.map(movieMapper) ?: emptyList() }, networkState
+    )
   }
 
-  override suspend fun refreshComingSoon() {
-    withContext(Dispatchers.IO) {
-      loadComingSoon()
+  private fun refreshComingSoon(networkState: MutableLiveData<NetworkState>) {
+    GlobalScope.launch(Dispatchers.IO) {
+      loadComingSoon(networkState)
     }
   }
 
-  private suspend fun loadComingSoon(page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()) {
-    val upcomingResponse = api.getUpcoming(page).await()
+  private suspend fun loadComingSoon(
+      networkState: MutableLiveData<NetworkState>, page: Int = DEFAULT_START_PAGE, loadedMovies: List<MovieRecord> = emptyList()
+  ) {
+    try {
+      val upcomingResponse = api.getUpcoming(page).await()
 
-    // load next pages if more
-    val currentPage = upcomingResponse.page ?: DEFAULT_START_PAGE
-    val hasMore = hasMorePages(upcomingResponse)
-    val combinedResults = loadedMovies + (upcomingResponse.results ?: emptyList())
+      // load next pages if more
+      val currentPage = upcomingResponse.page ?: DEFAULT_START_PAGE
+      val hasMore = hasMorePages(upcomingResponse)
+      val combinedResults = loadedMovies + (upcomingResponse.results ?: emptyList())
 
-    if (hasMore) {
-      val nextPage = currentPage + 1
-      loadComingSoon(nextPage, combinedResults)
-    } else {
-      // filter old movies
-      val filteredMovies = combinedResults.filter { upcomingDateFilter(it) }
+      if (hasMore) {
+        val nextPage = currentPage + 1
+        loadComingSoon(networkState, nextPage, combinedResults)
+      } else {
+        // filter old movies
+        val filteredMovies = combinedResults.filter { upcomingDateFilter(it) }
 
-      // get genres
-      val movieGenres = getMovieGenres(filteredMovies)
+        // get genres
+        val movieGenres = getMovieGenres(filteredMovies)
 
-      val upcoming = filteredMovies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
+        val upcoming = filteredMovies.map { Upcoming(it.id ?: Int.MIN_VALUE) }
 
-      db.runInTransaction {
-        db.moviesDao().insertMovies(filteredMovies)
-        db.movieGenresDao().insertMovieGenres(movieGenres)
-        if (currentPage == DEFAULT_START_PAGE) {
-          db.upcomingDao().deleteAll()
+        db.runInTransaction {
+          db.moviesDao().insertMovies(filteredMovies)
+          db.movieGenresDao().insertMovieGenres(movieGenres)
+          if (currentPage == DEFAULT_START_PAGE) {
+            db.upcomingDao().deleteAll()
+          }
+          db.upcomingDao().saveUpcoming(upcoming)
         }
-        db.upcomingDao().saveUpcoming(upcoming)
+        networkState.postValue(NetworkState.LOADED)
       }
+    } catch (e: Exception) {
+      networkState.postValue(NetworkState.error(e.message))
     }
   }
 
