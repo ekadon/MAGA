@@ -31,6 +31,9 @@ interface TMDBApi {
     private const val REGION = "region"
     private const val PAGE = "page"
     private const val BASE_URL = "https://api.themoviedb.org/"
+    private const val KYLOBYTE = 1024
+    private const val MEGABYTE = 1024
+    private const val CACHE_SIZE = 10L
 
     fun create(context: Context): TMDBApi {
 
@@ -43,29 +46,30 @@ interface TMDBApi {
 
         val locale = Locale.getDefault()
 
-        val url = originalHttpUrl.newBuilder().addQueryParameter(API_KEY, BuildConfig.API_KEY).addQueryParameter(LANG, locale.language)
-            .addQueryParameter(REGION, locale.country).build()
+        val url = originalHttpUrl.newBuilder()
+          .addQueryParameter(API_KEY, BuildConfig.API_KEY)
+          .addQueryParameter(LANG, locale.language)
+          .addQueryParameter(REGION, locale.country).build()
 
-        val request = original.newBuilder().addHeader("Content-Encoding", "gzip").url(url).build()
+        val requestBuilder = original.newBuilder()
+        val request = with(requestBuilder) {
+          addHeader("Content-Encoding", "gzip")
+          url(url)
+        }.build()
 
         return@Interceptor chain.proceed(request)
       }
 
-      val cacheSize = 10 * 1024 * 1024L
+      val cacheSize = CACHE_SIZE * MEGABYTE * KYLOBYTE
       val cache = Cache(context.cacheDir, cacheSize)
 
-      val client = OkHttpClient.Builder()
-        .addInterceptor(logger)
-        .addInterceptor(paramInterceptor)
-        .cache(cache).build()
+      val client = OkHttpClient.Builder().addInterceptor(logger)
+        .addInterceptor(paramInterceptor).cache(cache).build()
 
-      return Retrofit.Builder()
-        .baseUrl(BASE_URL)
+      return Retrofit.Builder().baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .client(client)
-        .build()
-        .create(TMDBApi::class.java)
+        .addCallAdapterFactory(CoroutineCallAdapterFactory()).client(client)
+        .build().create(TMDBApi::class.java)
     }
   }
 

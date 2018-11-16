@@ -1,7 +1,5 @@
 package oleg.osipenko.domain.repository
 
-import android.arch.lifecycle.LiveData
-import oleg.osipenko.domain.entities.Configuration
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.states.MoviesDataState
 
@@ -18,9 +16,4 @@ interface MoviesRepository {
      * Returns Coming soon movies
      */
     fun comingSoon(): MoviesDataState<List<Movie>>
-
-    /**
-     * Returns the API configuration object
-     */
-    fun configuration(): LiveData<Configuration>
 }

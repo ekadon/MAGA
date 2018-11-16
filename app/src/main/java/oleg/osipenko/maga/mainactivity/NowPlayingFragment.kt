@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.item_now_playing.*
 import oleg.osipenko.maga.R
 import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.network.TMDBApi
+import oleg.osipenko.maga.data.repository.ConfigDataRepository
 import oleg.osipenko.maga.data.repository.MoviesDataRepository
 
 class NowPlayingFragment : Fragment() {
@@ -38,20 +39,27 @@ class NowPlayingFragment : Fragment() {
     }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+      inflater: LayoutInflater, container: ViewGroup?,
+      savedInstanceState: Bundle?
+  ): View? {
     return inflater.inflate(R.layout.item_now_playing, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val viewModel = ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
-      override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val db = MoviesDb.create(context!!)
-        val api = TMDBApi.create(context!!)
-        val repo = MoviesDataRepository(db, api)
-        @Suppress("UNCHECKED_CAST") return MainActivityViewModel(repo) as T
-      }
-    })[MainActivityViewModel::class.java]
+    val viewModel =
+        ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
+          override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            val db = MoviesDb.create(context!!)
+            val api = TMDBApi.create(context!!)
+            val movieRepo = MoviesDataRepository(db, api)
+            val configRepo = ConfigDataRepository(db, api)
+            @Suppress("UNCHECKED_CAST") return MainActivityViewModel(
+              movieRepo, configRepo
+            ) as T
+          }
+        })[MainActivityViewModel::class.java]
 
     movie_title.text = arguments?.getString(TITLE)
 
@@ -60,23 +68,30 @@ class NowPlayingFragment : Fragment() {
       val baseUrl = it?.baseUrl ?: ""
       val sizes = it?.posterSizes ?: emptyList()
       if (!TextUtils.isEmpty(baseUrl) && sizes.isNotEmpty()) {
-        Glide.with(this).load(getImageUrl(baseUrl, url, sizes)).thumbnail(0.2f).listener(object : RequestListener<Drawable> {
-          override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-            movie_poster.setImageResource(R.drawable.placeholder)
-            return true
-          }
+        Glide.with(this).load(getImageUrl(baseUrl, url, sizes)).thumbnail(0.2f)
+          .listener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?, model: Any?, target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+              movie_poster.setImageResource(R.drawable.placeholder)
+              return true
+            }
 
-          override fun onResourceReady(
-              resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean
-          ): Boolean {
-            return false
-          }
-        }).into(movie_poster)
+            override fun onResourceReady(
+                resource: Drawable?, model: Any?, target: Target<Drawable>?,
+                dataSource: DataSource?, isFirstResource: Boolean
+            ): Boolean {
+              return false
+            }
+          }).into(movie_poster)
       }
     })
   }
 
-  private fun getImageUrl(baseUrl: String, imagePath: String, sizes: List<String>): String {
+  private fun getImageUrl(
+      baseUrl: String, imagePath: String, sizes: List<String>
+  ): String {
     val baseUrlSize = baseUrl + closestSize(sizes)
     return baseUrlSize + imagePath
   }
@@ -100,6 +115,8 @@ class NowPlayingFragment : Fragment() {
   }
 
   private fun getImageWidth(): Int {
-    return (resources.displayMetrics.widthPixels - resources.getDimension(R.dimen.margin_material) * 2).toInt()
+    return (resources.displayMetrics.widthPixels - resources.getDimension(
+      R.dimen.margin_material
+    ) * 2).toInt()
   }
 }

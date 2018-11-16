@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
@@ -17,7 +16,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import kotlinx.android.synthetic.main.activity_main.*
 import oleg.osipenko.domain.entities.Movie
-import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.maga.R
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -33,20 +31,28 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
     val activityModel = module {
-      viewModel { MainActivityViewModel(get() as MoviesRepository) }
+      viewModel { MainActivityViewModel(get(), get()) }
 
       single { Glide.with(androidContext()) }
 
       single<DiffUtil.ItemCallback<Movie>> { ComingSoonAdapter.MovieDiffCallback() }
 
-      factory { ComingSoonAdapter(get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>) }
+      factory {
+        ComingSoonAdapter(
+          get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>
+        )
+      }
 
       factory { (activity: AppCompatActivity) -> NowPlayingAdapter(activity) }
     }
   }
 
   private val comingSoonAdapter: ComingSoonAdapter by inject()
-  private val nowPlayingAdapter: NowPlayingAdapter by inject { parametersOf(this@MainActivity) }
+  private val nowPlayingAdapter: NowPlayingAdapter by inject {
+    parametersOf(
+      this@MainActivity
+    )
+  }
   private val activityViewModel: MainActivityViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,15 +66,20 @@ class MainActivity : AppCompatActivity() {
 
   private fun initViews() {
     window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-    val comingSoonLm = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+    val comingSoonLm =
+        LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     list_coming_soon.layoutManager = comingSoonLm
     list_coming_soon.adapter = comingSoonAdapter
-    list_coming_soon.addItemDecoration(ComingSoonMarginItemDecoration(this, R.dimen.margin_material))
+    list_coming_soon.addItemDecoration(
+      ComingSoonMarginItemDecoration(this, R.dimen.margin_material)
+    )
 
     pager_now_playing.adapter = nowPlayingAdapter
     pager_now_playing.clipToPadding = false
-    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
-    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin = getStatusBarHeight()
+    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+        getStatusBarHeight()
+    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+        getStatusBarHeight()
     setSupportActionBar(toolbar)
 
     supportActionBar?.apply {
@@ -79,7 +90,8 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun getStatusBarHeight(): Int {
-    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+    val resourceId =
+        resources.getIdentifier("status_bar_height", "dimen", "android")
 
     return if (resourceId > 0) {
       resources.getDimensionPixelSize(resourceId)
@@ -110,10 +122,10 @@ class MainActivity : AppCompatActivity() {
       nowPlayingAdapter.setMovies(it)
       if (it?.isNotEmpty() == true) {
         val startIndex = it.size * 10
-        pager_now_playing.setPageTransformer(false, null)
-        pager_now_playing.setCurrentItem(startIndex, false)
-        pager_now_playing.setPageTransformer(false, object : ViewPager.PageTransformer {
-          override fun transformPage(page: View, position: Float) {
+        with(pager_now_playing) {
+          setPageTransformer(false, null)
+          setCurrentItem(startIndex, false)
+          setPageTransformer(false) { page, position ->
             val shadow = page.findViewById<View>(R.id.shadow)
             val title = page.findViewById<View>(R.id.movie_title)
             if (position < -0.3 || position > 0.3) {
@@ -124,22 +136,23 @@ class MainActivity : AppCompatActivity() {
               title.visibility = View.VISIBLE
             }
           }
-        })
+        }
       }
     })
     activityViewModel.nowPlayingErrorMessage.observe(this, errorObserver)
   }
 
   private fun observeComingSoon() {
-    activityViewModel.comingSoonMovies.observe(this, Observer { comingSoonAdapter.submitList(it) })
+    activityViewModel.comingSoonMovies.observe(this, Observer {
+      comingSoonAdapter.submitList(it)
+    })
     activityViewModel.comingSoonErrorMessage.observe(this, errorObserver)
   }
 
   private val errorObserver = Observer<String?> {
     it?.let {
-      Snackbar.make(
-          list_coming_soon, Html.fromHtml(it), Snackbar.LENGTH_LONG
-      ).show()
+      Snackbar.make(list_coming_soon, Html.fromHtml(it), Snackbar.LENGTH_LONG)
+        .show()
     }
   }
 
