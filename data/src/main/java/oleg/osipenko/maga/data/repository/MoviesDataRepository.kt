@@ -42,7 +42,10 @@ class MoviesDataRepository(
           )
         )
       }
-    } catch (e: Exception) {
+    } catch (e: HttpException) {
+
+    } catch (e: UnknownHostException) {
+
     }
   }
 

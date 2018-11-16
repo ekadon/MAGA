@@ -23,9 +23,6 @@ import java.util.*
 interface TMDBApi {
 
   companion object {
-    /**
-     * query parameters
-     */
     private const val API_KEY = "api_key"
     private const val LANG = "language"
     private const val REGION = "region"

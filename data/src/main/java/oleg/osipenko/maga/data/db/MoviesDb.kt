@@ -47,9 +47,6 @@ abstract class MoviesDb : RoomDatabase() {
      */
     const val DB_VERSION = 1
 
-    /**
-     * MoviesDb name
-     */
     private const val DB_NAME = "maga"
 
     fun create(context: Context): MoviesDb {
