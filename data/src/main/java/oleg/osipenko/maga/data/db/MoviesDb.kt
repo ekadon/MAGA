@@ -6,8 +6,18 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import oleg.osipenko.maga.data.db.MoviesDb.Companion.DB_VERSION
-import oleg.osipenko.maga.data.db.dao.*
-import oleg.osipenko.maga.data.entities.*
+import oleg.osipenko.maga.data.db.dao.ConfigurationDao
+import oleg.osipenko.maga.data.db.dao.GenresDao
+import oleg.osipenko.maga.data.db.dao.MovieGenresDao
+import oleg.osipenko.maga.data.db.dao.MoviesDao
+import oleg.osipenko.maga.data.db.dao.NowPlayingDao
+import oleg.osipenko.maga.data.db.dao.UpcomingDao
+import oleg.osipenko.maga.data.entities.ConfigurationRecord
+import oleg.osipenko.maga.data.entities.GenreRecord
+import oleg.osipenko.maga.data.entities.MovieGenreRecord
+import oleg.osipenko.maga.data.entities.MovieRecord
+import oleg.osipenko.maga.data.entities.NowPlaying
+import oleg.osipenko.maga.data.entities.Upcoming
 
 /**
  * Persistence database

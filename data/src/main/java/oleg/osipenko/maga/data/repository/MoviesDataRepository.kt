@@ -12,7 +12,12 @@ import oleg.osipenko.domain.repository.MoviesRepository
 import oleg.osipenko.domain.states.MoviesDataState
 import oleg.osipenko.domain.states.NetworkState
 import oleg.osipenko.maga.data.db.MoviesDb
-import oleg.osipenko.maga.data.entities.*
+import oleg.osipenko.maga.data.entities.ConfigurationRecord
+import oleg.osipenko.maga.data.entities.GenreRecord
+import oleg.osipenko.maga.data.entities.MovieGenreRecord
+import oleg.osipenko.maga.data.entities.MovieRecord
+import oleg.osipenko.maga.data.entities.NowPlaying
+import oleg.osipenko.maga.data.entities.Upcoming
 import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import org.threeten.bp.LocalDate
