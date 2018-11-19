@@ -8,6 +8,5 @@ import android.arch.persistence.room.PrimaryKey
  */
 @Entity(tableName = "genres")
 data class GenreRecord(
-        @PrimaryKey val id: Int,
-        val name: String?
+    @PrimaryKey val id: Int, val name: String?
 )

@@ -8,8 +8,8 @@ import android.arch.persistence.room.PrimaryKey
  */
 @Entity(tableName = "config")
 data class ConfigurationRecord(
-        @PrimaryKey val id: Int,
-        val baseUrl: String?,
-        val posterSizes: List<String>?,
-        val backdropSizes: List<String>?
+    @PrimaryKey val id: Int,
+    val baseUrl: String?,
+    val posterSizes: List<String>?,
+    val backdropSizes: List<String>?
 )

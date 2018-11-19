@@ -12,24 +12,24 @@ import java.util.*
  * MoviesDb entity linking together movie and genre
  */
 @Entity(
-        tableName = "movie_genres",
-        indices = arrayOf(Index("movieId"), Index("genreId")),
-        foreignKeys = [
-            (ForeignKey(
-                    entity = MovieRecord::class,
-                    parentColumns = ["id"],
-                    childColumns = ["movieId"],
-                    onUpdate = CASCADE,
-                    onDelete = NO_ACTION)),
-            (ForeignKey(
-                    entity = GenreRecord::class,
-                    parentColumns = ["id"],
-                    childColumns = ["genreId"],
-                    onUpdate = CASCADE,
-                    onDelete = NO_ACTION))]
+  tableName = "movie_genres",
+  indices = [Index("movieId"), Index("genreId")],
+  foreignKeys = [
+    (ForeignKey(
+      entity = MovieRecord::class,
+      parentColumns = ["id"],
+      childColumns = ["movieId"],
+      onUpdate = CASCADE,
+      onDelete = NO_ACTION
+  )), (ForeignKey(
+    entity = GenreRecord::class,
+    parentColumns = ["id"],
+    childColumns = ["genreId"],
+    onUpdate = CASCADE,
+    onDelete = NO_ACTION
+  ))]
 )
 data class MovieGenreRecord(
-        @PrimaryKey val id: String = UUID.randomUUID().toString(),
-        val movieId: Int,
-        val genreId: Int
+    @PrimaryKey val id: String = UUID.randomUUID().toString(), val movieId: Int,
+    val genreId: Int
 )

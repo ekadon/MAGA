@@ -11,6 +11,7 @@ import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.entities.ConfigurationRecord
 import oleg.osipenko.maga.data.network.TMDBApi
 import retrofit2.HttpException
+import timber.log.Timber
 import java.net.UnknownHostException
 
 class ConfigDataRepository(
@@ -38,9 +39,9 @@ class ConfigDataRepository(
         }
       }
     } catch (e: HttpException) {
-
+      Timber.e(e.message())
     } catch (e: UnknownHostException) {
-
+      Timber.e(e.message)
     }
   }
 

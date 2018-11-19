@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import oleg.osipenko.maga.data.di.dataModule
 import oleg.osipenko.maga.mainactivity.MainActivity
 import org.koin.android.ext.android.startKoin
+import timber.log.Timber
 
 class MagaApp : Application() {
   override fun onCreate() {
@@ -15,6 +16,7 @@ class MagaApp : Application() {
     GlobalScope.launch {
       AndroidThreeTen.init(applicationContext)
     }
+    Timber.plant(Timber.DebugTree())
 
     startKoin(this, listOf(dataModule, MainActivity.activityModel))
   }

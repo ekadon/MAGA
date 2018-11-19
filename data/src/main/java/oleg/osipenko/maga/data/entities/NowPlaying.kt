@@ -8,11 +8,12 @@ import android.arch.persistence.room.PrimaryKey
 /**
  * Represents the collection of Now playing movies
  */
-@Entity(foreignKeys =
-[ForeignKey(entity = MovieRecord::class,
-        parentColumns = ["id"],
-        childColumns = ["movieId"],
-        onUpdate = CASCADE)])
+@Entity(
+  foreignKeys = [ForeignKey(
+    entity = MovieRecord::class, parentColumns = ["id"],
+    childColumns = ["movieId"], onUpdate = CASCADE
+  )]
+)
 data class NowPlaying(
-        @PrimaryKey var movieId: Int
+    @PrimaryKey var movieId: Int
 )

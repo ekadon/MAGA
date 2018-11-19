@@ -18,6 +18,7 @@ import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
 import org.threeten.bp.LocalDate
 import retrofit2.HttpException
+import timber.log.Timber
 import java.net.UnknownHostException
 
 class MoviesDataRepository(
@@ -43,9 +44,9 @@ class MoviesDataRepository(
         )
       }
     } catch (e: HttpException) {
-
+      Timber.e(e.message())
     } catch (e: UnknownHostException) {
-
+      Timber.e(e.message)
     }
   }
 

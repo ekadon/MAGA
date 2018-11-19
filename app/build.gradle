@@ -4,56 +4,59 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 28
-    defaultConfig {
-        applicationId "oleg.osipenko.maga"
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  compileSdkVersion 28
+  defaultConfig {
+    applicationId "oleg.osipenko.maga"
+    minSdkVersion 19
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    lintOptions {
-        abortOnError false
-    }
-    dataBinding {
-        enabled = true
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+  dataBinding {
+    enabled = true
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':data')
-    implementation project(':domain')
+  implementation fileTree(include: ['*.jar'], dir: 'libs')
+  implementation project(':data')
+  implementation project(':domain')
 
-    def androidGroup = 'com.android.support'
+  def androidGroup = 'com.android.support'
 
-    implementation CoreDependencies.kotlin
-    implementation CoreDependencies.coroutines
-    implementation CoreDependencies.coroutinesAndroid
-    implementation UiDependencies.appCompat
-    implementation(UiDependencies.glide) { exclude group: androidGroup }
-    kapt UiDependencies.glideCompiler
-    implementation UiDependencies.constraintLayout
-    implementation UiDependencies.recyclerView
-    //kapt UiDependencies.dataBinding
-    implementation UiDependencies.design
-    implementation CoreDependencies.threeten
-    implementation CoreDependencies.koin
-    implementation CoreDependencies.koinViewModel
-    implementation CoreDependencies.koinScope
-    implementation UiDependencies.circleImageView
+  implementation CoreDependencies.kotlin
+  implementation CoreDependencies.coroutines
+  implementation CoreDependencies.coroutinesAndroid
+  implementation UiDependencies.appCompat
+  implementation(UiDependencies.glide) { exclude group: androidGroup }
+  kapt UiDependencies.glideCompiler
+  implementation UiDependencies.constraintLayout
+  implementation UiDependencies.recyclerView
+  //kapt UiDependencies.dataBinding
+  implementation UiDependencies.design
+  implementation CoreDependencies.threeten
+  implementation CoreDependencies.koin
+  implementation CoreDependencies.koinViewModel
+  implementation CoreDependencies.koinScope
+  implementation UiDependencies.circleImageView
+  implementation CoreDependencies.timber
 
-    implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
-    kapt ArchitectureComponents.lifeCycleCompiler
+  implementation(ArchitectureComponents.lifecycle) {
+    exclude group: androidGroup
+  }
+  kapt ArchitectureComponents.lifeCycleCompiler
 }

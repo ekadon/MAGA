@@ -14,6 +14,7 @@ object Versions {
   val circleImageView = "2.2.0"
   val coroutinesAdapter = "0.9.2"
   val coroutines = "1.0.0"
+  val timber = "4.7.1"
 
   val junit = "4.12"
   val mockitoKotlin = "1.5.0"
@@ -37,6 +38,7 @@ object CoreDependencies {
   val threeten = "com.jakewharton.threetenabp:threetenabp:${Versions.threeten}"
   val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
   val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+  val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 }
 
 object UiDependencies {
