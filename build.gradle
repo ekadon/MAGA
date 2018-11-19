@@ -13,24 +13,6 @@ buildscript {
   }
 }
 
-plugins {
-  id("io.gitlab.arturbosch.detekt").version("1.0.0-RC11")
-}
-
-detekt {
-  toolVersion = "1.0.0-RC11"
-  input = files("$projectDir/app/src/main/java")
-  input = files("$projectDir/domain/src/main/java")
-  input = files("$projectDir/data/src/main/java")
-  filters = ".*/resources/.*,.*/build/.*"
-  config = files("$projectDir/default-detekt-config.yml")
-  reports {
-    xml {
-      enabled = false
-    }
-  }
-}
-
 allprojects {
   repositories {
     google()
