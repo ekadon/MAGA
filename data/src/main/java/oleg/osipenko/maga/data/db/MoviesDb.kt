@@ -49,9 +49,7 @@ abstract class MoviesDb : RoomDatabase() {
 
     private const val DB_NAME = "maga"
 
-    fun create(context: Context): MoviesDb {
-      return Room.databaseBuilder(context, MoviesDb::class.java, DB_NAME)
-        .build()
-    }
+    fun create(context: Context): MoviesDb =
+      Room.databaseBuilder(context, MoviesDb::class.java, DB_NAME).build()
   }
 }

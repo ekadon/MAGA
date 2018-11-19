@@ -15,7 +15,7 @@ import timber.log.Timber
 import java.net.UnknownHostException
 
 class ConfigDataRepository(
-    private val db: MoviesDb, private val api: TMDBApi
+  private val db: MoviesDb, private val api: TMDBApi
 ) : ConfigRepository {
 
   init {
@@ -45,12 +45,11 @@ class ConfigDataRepository(
     }
   }
 
-  override fun configuration(): LiveData<Configuration> {
-    return Transformations.map(db.configDao().configuration) {
+  override fun configuration(): LiveData<Configuration> =
+    Transformations.map(db.configDao().configuration) {
       Configuration(
         it?.baseUrl ?: "", it?.posterSizes ?: emptyList(),
         it?.backdropSizes ?: emptyList()
       )
     }
-  }
 }

@@ -15,19 +15,19 @@ import java.util.*
   tableName = "movie_genres",
   indices = [Index("movieId"), Index("genreId")],
   foreignKeys = [
-    (ForeignKey(
+    ForeignKey(
       entity = MovieRecord::class,
       parentColumns = ["id"],
       childColumns = ["movieId"],
       onUpdate = CASCADE,
       onDelete = NO_ACTION
-  )), (ForeignKey(
+  ), ForeignKey(
     entity = GenreRecord::class,
     parentColumns = ["id"],
     childColumns = ["genreId"],
     onUpdate = CASCADE,
     onDelete = NO_ACTION
-  ))]
+  )]
 )
 data class MovieGenreRecord(
     @PrimaryKey val id: String = UUID.randomUUID().toString(), val movieId: Int,

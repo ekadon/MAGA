@@ -11,5 +11,5 @@ fun nowPlayingDateFilter(
   val daysSinceRelease = ChronoUnit.DAYS.between(
     currentDate, movieDate
   )
-  return daysSinceRelease in (MoviesDataRepository.MONTH + 1)..0;
+  return daysSinceRelease in (MoviesDataRepository.MONTH + 1)..0
 }
