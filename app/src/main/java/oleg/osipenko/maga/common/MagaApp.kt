@@ -9,6 +9,9 @@ import oleg.osipenko.maga.mainactivity.MainActivity
 import org.koin.android.ext.android.startKoin
 import timber.log.Timber
 
+/**
+ * Subclass of [Application].
+ */
 class MagaApp : Application() {
   override fun onCreate() {
     super.onCreate()

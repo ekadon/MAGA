@@ -25,7 +25,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module.module
 
 /**
- * Main activity with movies
+ * Main activity with movies.
  */
 class MainActivity : AppCompatActivity() {
 

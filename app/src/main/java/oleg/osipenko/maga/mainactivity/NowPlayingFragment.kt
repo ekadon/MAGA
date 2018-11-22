@@ -23,12 +23,18 @@ import oleg.osipenko.maga.data.network.TMDBApi
 import oleg.osipenko.maga.data.repository.ConfigDataRepository
 import oleg.osipenko.maga.data.repository.MoviesDataRepository
 
+/**
+ * Fragment for displaying movie in the Now Playing feed.
+ */
 class NowPlayingFragment : Fragment() {
 
   companion object {
     private const val IMAGE_URL = "url.image"
     private const val TITLE = "title.movie"
 
+    /**
+     * Static factory method.
+     */
     fun newInstance(url: String, title: String): NowPlayingFragment {
       val fragment = NowPlayingFragment()
       val args = Bundle()

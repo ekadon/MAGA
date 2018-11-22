@@ -5,9 +5,15 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v7.app.AppCompatActivity
 import oleg.osipenko.domain.entities.Movie
 
+/**
+ * Adapter for displaying Now Playing feed.
+ */
 class NowPlayingAdapter(activity: AppCompatActivity) : FragmentStatePagerAdapter(activity.supportFragmentManager) {
   private val movies: MutableList<Movie> = ArrayList()
 
+  /**
+   * Sets the content to display using this adapter.
+   */
   fun setMovies(nowPlaying: List<Movie>?) {
     nowPlaying?.let {
       movies.clear()

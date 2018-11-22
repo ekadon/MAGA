@@ -9,7 +9,7 @@ import oleg.osipenko.domain.states.MoviesDataState
 import oleg.osipenko.domain.states.Status
 
 /**
- * View model for [MainActivity]
+ * View model for [MainActivity].
  */
 class MainActivityViewModel(
     moviesRepository: MoviesRepository, configRepository: ConfigRepository
