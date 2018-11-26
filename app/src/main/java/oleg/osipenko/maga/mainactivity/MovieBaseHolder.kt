@@ -33,7 +33,7 @@ abstract class MovieBaseHolder(
     for (v in sizes) {
       if (v.equals(ORIGINAL)) break
       val intValue = v.replaceFirst(W_PREFIX, "", true).toInt()
-      val diff = Math.abs(intValue - (getImageViewWidth()))
+      val diff = Math.abs(intValue - getImageViewWidth())
 
       if (diff < min) {
         min = diff

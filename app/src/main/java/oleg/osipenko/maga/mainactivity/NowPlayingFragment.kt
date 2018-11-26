@@ -1,9 +1,6 @@
 package oleg.osipenko.maga.mainactivity
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -18,10 +15,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.item_now_playing.*
 import oleg.osipenko.maga.R
-import oleg.osipenko.maga.data.db.MoviesDb
-import oleg.osipenko.maga.data.network.TMDBApi
-import oleg.osipenko.maga.data.repository.ConfigDataRepository
-import oleg.osipenko.maga.data.repository.MoviesDataRepository
+import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * Fragment for displaying movie in the Now Playing feed.
@@ -31,6 +25,7 @@ class NowPlayingFragment : Fragment() {
   companion object {
     private const val IMAGE_URL = "url.image"
     private const val TITLE = "title.movie"
+    const val THUMBNAIL = 0.2f
 
     /**
      * Static factory method.
@@ -45,58 +40,45 @@ class NowPlayingFragment : Fragment() {
     }
   }
 
+  private val fragmentViewModel: MainActivityViewModel by viewModel()
+
   override fun onCreateView(
-      inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.item_now_playing, container, false)
-  }
+    inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+  ) = inflater.inflate(R.layout.item_now_playing, container, false)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val viewModel =
-        ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
-          override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            val db = MoviesDb.create(context!!)
-            val api = TMDBApi.create(context!!)
-            val movieRepo = MoviesDataRepository(db, api)
-            val configRepo = ConfigDataRepository(db, api)
-            @Suppress("UNCHECKED_CAST") return MainActivityViewModel(
-              movieRepo, configRepo
-            ) as T
-          }
-        })[MainActivityViewModel::class.java]
 
     movie_title.text = arguments?.getString(TITLE)
 
-    viewModel.configObservable.observe(this, Observer {
+    fragmentViewModel.configObservable.observe(this, Observer {
       val url = arguments?.getString(IMAGE_URL) ?: ""
       val baseUrl = it?.baseUrl ?: ""
       val sizes = it?.posterSizes ?: emptyList()
       if (!TextUtils.isEmpty(baseUrl) && sizes.isNotEmpty()) {
-        Glide.with(this).load(getImageUrl(baseUrl, url, sizes)).thumbnail(0.2f)
-          .listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                e: GlideException?, model: Any?, target: Target<Drawable>?,
-                isFirstResource: Boolean
-            ): Boolean {
-              movie_poster.setImageResource(R.drawable.placeholder)
-              return true
-            }
+        Glide.with(this).load(getImageUrl(baseUrl, url, sizes))
+          .thumbnail(THUMBNAIL).listener(object : RequestListener<Drawable> {
+          override fun onLoadFailed(
+            e: GlideException?, model: Any?, target: Target<Drawable>?,
+            isFirstResource: Boolean
+          ): Boolean {
+            movie_poster.setImageResource(R.drawable.placeholder)
+            return true
+          }
 
-            override fun onResourceReady(
-                resource: Drawable?, model: Any?, target: Target<Drawable>?,
-                dataSource: DataSource?, isFirstResource: Boolean
-            ): Boolean {
-              return false
-            }
-          }).into(movie_poster)
+          override fun onResourceReady(
+            resource: Drawable?, model: Any?, target: Target<Drawable>?,
+            dataSource: DataSource?, isFirstResource: Boolean
+          ): Boolean {
+            return false
+          }
+        }).into(movie_poster)
       }
     })
   }
 
   private fun getImageUrl(
-      baseUrl: String, imagePath: String, sizes: List<String>
+    baseUrl: String, imagePath: String, sizes: List<String>
   ): String {
     val baseUrlSize = baseUrl + closestSize(sizes)
     return baseUrlSize + imagePath
@@ -121,8 +103,8 @@ class NowPlayingFragment : Fragment() {
   }
 
   private fun getImageWidth(): Int {
-    return (resources.displayMetrics.widthPixels - resources.getDimension(
-      R.dimen.margin_material
-    ) * 2).toInt()
+    val screenWidth = resources.displayMetrics.widthPixels
+    val margins = resources.getDimension(R.dimen.margin_material) * 2
+    return (screenWidth - margins).toInt()
   }
 }

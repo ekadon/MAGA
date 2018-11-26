@@ -1,6 +1,5 @@
 package oleg.osipenko.maga.mainactivity
 
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v7.app.AppCompatActivity
 import oleg.osipenko.domain.entities.Movie
@@ -8,7 +7,8 @@ import oleg.osipenko.domain.entities.Movie
 /**
  * Adapter for displaying Now Playing feed.
  */
-class NowPlayingAdapter(activity: AppCompatActivity) : FragmentStatePagerAdapter(activity.supportFragmentManager) {
+class NowPlayingAdapter(activity: AppCompatActivity) :
+  FragmentStatePagerAdapter(activity.supportFragmentManager) {
   private val movies: MutableList<Movie> = ArrayList()
 
   /**
@@ -24,13 +24,10 @@ class NowPlayingAdapter(activity: AppCompatActivity) : FragmentStatePagerAdapter
 
   override fun getCount() = if (movies.isEmpty()) 0 else Int.MAX_VALUE
 
-  override fun getItem(position: Int): Fragment {
-    return movies[getMoviePosition(position)].let { movie ->
+  override fun getItem(position: Int) =
+    movies[getMoviePosition(position)].let { movie ->
       NowPlayingFragment.newInstance(movie.posterPath, movie.title)
     }
-  }
 
-  private fun getMoviePosition(pagerPosition: Int): Int {
-    return pagerPosition % movies.size
-  }
+  private fun getMoviePosition(pagerPosition: Int) = pagerPosition % movies.size
 }

@@ -27,18 +27,24 @@ import org.koin.dsl.module.module
 /**
  * Main activity with movies.
  */
+@Suppress("TooManyFunctions")
 class MainActivity : AppCompatActivity() {
 
   companion object {
-    val activityModel = module {
+    private const val INFINITE_SIZE_MULTIPLIER = 10
+    private const val THRESHOLD = 0.3
+
+    val activityModule = module {
       viewModel { MainActivityViewModel(get(), get()) }
 
       single { Glide.with(androidContext()) }
 
-      single<DiffUtil.ItemCallback<Movie>> { ComingSoonAdapter.MovieDiffCallback() }
+      single<DiffUtil.ItemCallback<Movie>> {
+        ComingSoonAdapter.MovieDiffCallback()
+      }
 
       factory {
-        ComingSoonAdapter(
+        @Suppress("UnsafeCast") ComingSoonAdapter(
           get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>
         )
       }
@@ -67,7 +73,7 @@ class MainActivity : AppCompatActivity() {
   private fun initViews() {
     window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     val comingSoonLm =
-        LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+      LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     list_coming_soon.layoutManager = comingSoonLm
     list_coming_soon.adapter = comingSoonAdapter
     list_coming_soon.addItemDecoration(
@@ -76,10 +82,12 @@ class MainActivity : AppCompatActivity() {
 
     pager_now_playing.adapter = nowPlayingAdapter
     pager_now_playing.clipToPadding = false
+    @Suppress("UnsafeCast")
     (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-        getStatusBarHeight()
+      getStatusBarHeight()
+    @Suppress("UnsafeCast")
     (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-        getStatusBarHeight()
+      getStatusBarHeight()
     setSupportActionBar(toolbar)
 
     supportActionBar?.apply {
@@ -91,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
   private fun getStatusBarHeight(): Int {
     val resourceId =
-        resources.getIdentifier("status_bar_height", "dimen", "android")
+      resources.getIdentifier("status_bar_height", "dimen", "android")
 
     return if (resourceId > 0) {
       resources.getDimensionPixelSize(resourceId)
@@ -121,14 +129,19 @@ class MainActivity : AppCompatActivity() {
     activityViewModel.nowPlayingMovies.observe(this, Observer {
       nowPlayingAdapter.setMovies(it)
       if (it?.isNotEmpty() == true) {
-        val startIndex = it.size * 10
+        val startIndex = it.size * INFINITE_SIZE_MULTIPLIER
         with(pager_now_playing) {
           setPageTransformer(false, null)
           setCurrentItem(startIndex, false)
           setPageTransformer(false) { page, position ->
             val shadow = page.findViewById<View>(R.id.shadow)
             val title = page.findViewById<View>(R.id.movie_title)
-            if (position < -0.3 || position > 0.3) {
+
+            fun isEnoughForTransformation(position: Float): Boolean {
+              return position < -THRESHOLD || position > THRESHOLD
+            }
+
+            if (isEnoughForTransformation(position)) {
               shadow.visibility = View.VISIBLE
               title.visibility = View.INVISIBLE
             } else {
@@ -162,13 +175,13 @@ class MainActivity : AppCompatActivity() {
     })
   }
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    return when (item.itemId) {
-      android.R.id.home -> {
-        drawer.openDrawer(GravityCompat.START)
-        true
-      }
-      else              -> super.onOptionsItemSelected(item)
-    }
+  override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    android.R.id.home -> openDrawer()
+    else              -> super.onOptionsItemSelected(item)
+  }
+
+  private fun openDrawer(): Boolean {
+    drawer.openDrawer(GravityCompat.START)
+    return true
   }
 }

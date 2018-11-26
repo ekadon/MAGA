@@ -23,7 +23,9 @@ class ComingSoonAdapter(
   private val glide: RequestManager, diffCallback: DiffUtil.ItemCallback<Movie>
 ) : ListAdapter<Movie, ComingSoonAdapter.ComingSoonVH>(diffCallback) {
 
+  @Suppress("LateinitUsage")
   private lateinit var baseUrl: String
+  @Suppress("LateinitUsage")
   private lateinit var posterSizes: List<String>
 
   /**
@@ -52,16 +54,15 @@ class ComingSoonAdapter(
   class ComingSoonVH(itemView: View, baseUrl: String, sizes: List<String>) :
     MovieBaseHolder(itemView, baseUrl, sizes) {
 
-    override fun getImageViewWidth(): Int {
-      return itemView.resources.getDimension(R.dimen.width_coming_soon).toInt()
-    }
+    override fun getImageViewWidth(): Int =
+      itemView.resources.getDimension(R.dimen.width_coming_soon).toInt()
 
     /**
      * Sets the movie data to the view.
      */
     fun bind(glide: RequestManager, url: String) {
       if (!TextUtils.isEmpty(baseUrl) && sizes.isNotEmpty()) {
-        glide.load(getImageUrl(url)).thumbnail(0.2f)
+        glide.load(getImageUrl(url)).thumbnail(NowPlayingFragment.THUMBNAIL)
           .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
               e: GlideException?, model: Any?, target: Target<Drawable>?,
@@ -86,12 +87,10 @@ class ComingSoonAdapter(
    * Diff Callback for [ComingSoonAdapter].
    */
   class MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
-    override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
-      return oldItem.id == newItem.id
-    }
+    override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean =
+      oldItem.id == newItem.id
 
-    override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
-      return oldItem == newItem
-    }
+    override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean =
+      oldItem == newItem
   }
 }
