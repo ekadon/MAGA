@@ -7,7 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.repository.MoviesRepository
-import oleg.osipenko.domain.states.MoviesDataState
+import oleg.osipenko.domain.states.DataState
 import oleg.osipenko.domain.states.NetworkState
 import oleg.osipenko.maga.data.db.MoviesDb
 import oleg.osipenko.maga.data.entities.GenreRecord
@@ -50,13 +50,13 @@ class MoviesDataRepository(
     }
   }
 
-  override fun nowPlaying(): MoviesDataState<List<Movie>> {
+  override fun nowPlaying(): DataState<List<Movie>> {
     val networkState = MutableLiveData<NetworkState>()
     networkState.value = NetworkState.LOADING
 
     refreshNowPlaying(networkState)
 
-    return MoviesDataState(
+    return DataState(
       Transformations.map(db.nowPlayingDao().nowPlaying) {
         it?.map(MovieMapper) ?: emptyList()
       }, networkState
@@ -114,13 +114,13 @@ class MoviesDataRepository(
     }
   }
 
-  override fun comingSoon(): MoviesDataState<List<Movie>> {
+  override fun comingSoon(): DataState<List<Movie>> {
     val networkState = MutableLiveData<NetworkState>()
     networkState.value = NetworkState.LOADING
 
     refreshComingSoon(networkState)
 
-    return MoviesDataState(
+    return DataState(
       Transformations.map(db.upcomingDao().upcoming) {
         it?.map(MovieMapper) ?: emptyList()
       }, networkState

@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModel
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.domain.repository.ConfigRepository
 import oleg.osipenko.domain.repository.MoviesRepository
-import oleg.osipenko.domain.states.MoviesDataState
+import oleg.osipenko.domain.states.DataState
 import oleg.osipenko.domain.states.Status
 
 /**
@@ -15,10 +15,10 @@ class MainActivityViewModel(
     moviesRepository: MoviesRepository, configRepository: ConfigRepository
 ) : ViewModel() {
 
-  private val nowPlayingObservable: MoviesDataState<List<Movie>> =
+  private val nowPlayingObservable: DataState<List<Movie>> =
       moviesRepository.nowPlaying()
   private val nowPlayingNetworkState = nowPlayingObservable.networkState
-  private val comingSoonObservable: MoviesDataState<List<Movie>> =
+  private val comingSoonObservable: DataState<List<Movie>> =
       moviesRepository.comingSoon()
   private val comingSoonNetworkState = comingSoonObservable.networkState
 
