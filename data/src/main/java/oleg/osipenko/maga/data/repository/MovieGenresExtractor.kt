@@ -3,6 +3,9 @@ package oleg.osipenko.maga.data.repository
 import oleg.osipenko.maga.data.entities.MovieGenreRecord
 import oleg.osipenko.maga.data.entities.MovieRecord
 
+/**
+ * Maps movie information into the movie-genre record for the database.
+ */
 object MovieGenresExtractor :
   Function1<List<MovieRecord>?, List<MovieGenreRecord>> {
   override fun invoke(movies: List<MovieRecord>?): List<MovieGenreRecord> =

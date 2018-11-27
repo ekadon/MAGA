@@ -14,6 +14,9 @@ import retrofit2.HttpException
 import timber.log.Timber
 import java.net.UnknownHostException
 
+/**
+ * Implementation of [ConfigRepository].
+ */
 class ConfigDataRepository(
   private val db: MoviesDb, private val api: TMDBApi
 ) : ConfigRepository {

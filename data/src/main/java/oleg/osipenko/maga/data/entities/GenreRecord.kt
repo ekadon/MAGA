@@ -4,9 +4,9 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 /**
- * MoviesDb genre entity
+ * Database genre record.
  */
 @Entity(tableName = "genres")
 data class GenreRecord(
-    @PrimaryKey val id: Int, val name: String?
+  @PrimaryKey val id: Int, val name: String?
 )

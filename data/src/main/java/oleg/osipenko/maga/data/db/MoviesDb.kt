@@ -20,7 +20,7 @@ import oleg.osipenko.maga.data.entities.NowPlaying
 import oleg.osipenko.maga.data.entities.Upcoming
 
 /**
- * Persistence database
+ * Persistence database.
  */
 @Database(
   entities = [
@@ -34,21 +34,32 @@ import oleg.osipenko.maga.data.entities.Upcoming
 )
 @TypeConverters(oleg.osipenko.maga.data.db.TypeConverters::class)
 abstract class MoviesDb : RoomDatabase() {
+  @Suppress("UndocumentedPublicFunction")
   abstract fun nowPlayingDao(): NowPlayingDao
+
+  @Suppress("UndocumentedPublicFunction")
   abstract fun moviesDao(): MoviesDao
+
+  @Suppress("UndocumentedPublicFunction")
   abstract fun genresDao(): GenresDao
+
+  @Suppress("UndocumentedPublicFunction")
   abstract fun movieGenresDao(): MovieGenresDao
+
+  @Suppress("UndocumentedPublicFunction")
   abstract fun configDao(): ConfigurationDao
+
+  @Suppress("UndocumentedPublicFunction")
   abstract fun upcomingDao(): UpcomingDao
 
   companion object {
-    /**
-     * MoviesDb version
-     */
-    const val DB_VERSION = 1
+    internal const val DB_VERSION = 1
 
     private const val DB_NAME = "maga"
 
+    /**
+     * Factory method.
+     */
     fun create(context: Context): MoviesDb =
       Room.databaseBuilder(context, MoviesDb::class.java, DB_NAME).build()
   }

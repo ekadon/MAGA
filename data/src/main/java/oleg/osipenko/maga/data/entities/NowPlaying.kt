@@ -6,7 +6,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.PrimaryKey
 
 /**
- * Represents the collection of Now playing movies
+ * Database now playing table.
  */
 @Entity(
   foreignKeys = [ForeignKey(
@@ -15,5 +15,5 @@ import android.arch.persistence.room.PrimaryKey
   )]
 )
 data class NowPlaying(
-    @PrimaryKey var movieId: Int
+  @PrimaryKey var movieId: Int
 )

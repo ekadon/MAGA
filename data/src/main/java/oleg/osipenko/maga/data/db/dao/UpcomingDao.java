@@ -15,19 +15,20 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface UpcomingDao {
 
-    @Insert(onConflict = REPLACE)
-    void saveUpcoming(List<Upcoming> upcomings);
+  @Insert(onConflict = REPLACE)
+  void saveUpcoming(List<Upcoming> upcomings);
 
-    @Query("SELECT movies.id, movies.title, movies.posterPath, movies.backdropPath, movies.releaseDate, movies.voteAverage, " +
-        "GROUP_CONCAT(genres.name) AS genres " +
-        "FROM upcoming INNER JOIN movie_genres " +
-        "JOIN movies ON movies.id = movie_genres.movieId " +
-        "JOIN genres ON genres.id = movie_genres.genreId " +
-        "WHERE upcoming.movieId = movies.id " +
-        "GROUP BY movies.id " +
-        "ORDER BY movies.releaseDate ASC")
-    LiveData<List<MovieRecord>> getUpcoming();
+  @Query("SELECT movies.id, movies.title, movies.posterPath, " +
+      "movies.backdropPath, movies.releaseDate, movies.voteAverage, " +
+      "GROUP_CONCAT(genres.name) AS genres " +
+      "FROM upcoming INNER JOIN movie_genres " +
+      "JOIN movies ON movies.id = movie_genres.movieId " +
+      "JOIN genres ON genres.id = movie_genres.genreId " +
+      "WHERE upcoming.movieId = movies.id " +
+      "GROUP BY movies.id " +
+      "ORDER BY movies.releaseDate ASC")
+  LiveData<List<MovieRecord>> getUpcoming();
 
-    @Query("DELETE FROM upcoming")
-    void deleteAll();
+  @Query("DELETE FROM upcoming")
+  void deleteAll();
 }

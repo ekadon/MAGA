@@ -6,11 +6,13 @@ import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import oleg.osipenko.maga.data.entities.GenreRecord
 
 /**
- * Genres data access object interface
+ * Genres data access object interface.
  */
 @Dao
 interface GenresDao {
-
-    @Insert(onConflict = REPLACE)
-    fun insertGenres(genres: List<GenreRecord>)
+  /**
+   * Saves Genre records into the database.
+   */
+  @Insert(onConflict = REPLACE)
+  fun insertGenres(genres: List<GenreRecord>)
 }

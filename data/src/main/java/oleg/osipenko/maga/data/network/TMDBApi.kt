@@ -18,8 +18,9 @@ import retrofit2.http.Query
 import java.util.*
 
 /**
- * Declares the TMDB API methods
+ * Declares the TMDB API interface.
  */
+@Suppress("ComplexInterface")
 interface TMDBApi {
 
   companion object {
@@ -32,41 +33,53 @@ interface TMDBApi {
     private const val MEGABYTE = 1024
     private const val CACHE_SIZE = 10L
 
-    fun create(context: Context): TMDBApi {
+    /**
+     * Factory method.
+     */
+    fun create(context: Context): TMDBApi = Retrofit.Builder()
+      .baseUrl(BASE_URL)
+      .addConverterFactory(GsonConverterFactory.create())
+      .addCallAdapterFactory(CoroutineCallAdapterFactory())
+      .client(getClient(context))
+      .build()
+      .create(TMDBApi::class.java)
 
+    private fun getClient(context: Context): OkHttpClient =
+      OkHttpClient.Builder()
+      .addInterceptor(getLogger())
+      .addInterceptor(getParamInterceptor())
+      .cache(getCache(context))
+      .build()
+
+    private fun getLogger(): Interceptor {
       val logger = HttpLoggingInterceptor()
       logger.level = HttpLoggingInterceptor.Level.BODY
+      return logger
+    }
 
-      val paramInterceptor = Interceptor { chain ->
-        val original = chain.request()
-        val originalHttpUrl = original.url()
+    private fun getParamInterceptor(): Interceptor = Interceptor { chain ->
+      val original = chain.request()
+      val originalHttpUrl = original.url()
 
-        val locale = Locale.getDefault()
+      val locale = Locale.getDefault()
 
-        val url = originalHttpUrl.newBuilder()
-          .addQueryParameter(API_KEY, BuildConfig.API_KEY)
-          .addQueryParameter(LANG, locale.language)
-          .addQueryParameter(REGION, locale.country).build()
+      val url = originalHttpUrl.newBuilder()
+        .addQueryParameter(API_KEY, BuildConfig.API_KEY)
+        .addQueryParameter(LANG, locale.language)
+        .addQueryParameter(REGION, locale.country).build()
 
-        val requestBuilder = original.newBuilder()
-        val request = with(requestBuilder) {
-          addHeader("Content-Encoding", "gzip")
-          url(url)
-        }.build()
+      val requestBuilder = original.newBuilder()
+      val request = with(requestBuilder) {
+        addHeader("Content-Encoding", "gzip")
+        url(url)
+      }.build()
 
-        return@Interceptor chain.proceed(request)
-      }
+      chain.proceed(request)
+    }
 
+    private fun getCache(context: Context): Cache {
       val cacheSize = CACHE_SIZE * MEGABYTE * KYLOBYTE
-      val cache = Cache(context.cacheDir, cacheSize)
-
-      val client = OkHttpClient.Builder().addInterceptor(logger)
-        .addInterceptor(paramInterceptor).cache(cache).build()
-
-      return Retrofit.Builder().baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory()).client(client)
-        .build().create(TMDBApi::class.java)
+      return Cache(context.cacheDir, cacheSize)
     }
   }
 

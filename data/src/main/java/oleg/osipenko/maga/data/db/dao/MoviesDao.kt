@@ -6,11 +6,13 @@ import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import oleg.osipenko.maga.data.entities.MovieRecord
 
 /**
- * Movies data access object interface
+ * Movies data access object interface.
  */
 @Dao
 interface MoviesDao {
-
-    @Insert(onConflict = REPLACE)
-    fun insertMovies(movies: List<MovieRecord>)
+  /**
+   * Saves movies into the database.
+   */
+  @Insert(onConflict = REPLACE)
+  fun insertMovies(movies: List<MovieRecord>)
 }

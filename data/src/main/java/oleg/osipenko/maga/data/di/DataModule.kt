@@ -14,11 +14,7 @@ val dataModule = module {
 
   single { MoviesDb.create(androidContext()) }
 
-  single<MoviesRepository> {
-    MoviesDataRepository(get(), get())
-  }
+  single<MoviesRepository> { MoviesDataRepository(get(), get()) }
 
-  single<ConfigRepository> {
-    ConfigDataRepository(get(), get())
-  }
+  single<ConfigRepository> { ConfigDataRepository(get(), get()) }
 }

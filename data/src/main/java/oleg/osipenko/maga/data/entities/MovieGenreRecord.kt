@@ -9,11 +9,10 @@ import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
 /**
- * MoviesDb entity linking together movie and genre
+ * Database movie-genre record.
  */
 @Entity(
-  tableName = "movie_genres",
-  indices = [Index("movieId"), Index("genreId")],
+  tableName = "movie_genres", indices = [Index("movieId"), Index("genreId")],
   foreignKeys = [
     ForeignKey(
       entity = MovieRecord::class,
@@ -22,14 +21,14 @@ import java.util.*
       onUpdate = CASCADE,
       onDelete = NO_ACTION
   ), ForeignKey(
-    entity = GenreRecord::class,
-    parentColumns = ["id"],
-    childColumns = ["genreId"],
-    onUpdate = CASCADE,
-    onDelete = NO_ACTION
+      entity = GenreRecord::class,
+      parentColumns = ["id"],
+      childColumns = ["genreId"],
+      onUpdate = CASCADE,
+      onDelete = NO_ACTION
   )]
 )
 data class MovieGenreRecord(
-    @PrimaryKey val id: String = UUID.randomUUID().toString(), val movieId: Int,
-    val genreId: Int
+  @PrimaryKey val id: String = UUID.randomUUID().toString(), val movieId: Int,
+  val genreId: Int
 )

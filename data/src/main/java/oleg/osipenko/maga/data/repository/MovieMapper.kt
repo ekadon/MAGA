@@ -3,6 +3,9 @@ package oleg.osipenko.maga.data.repository
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.maga.data.entities.MovieRecord
 
+/**
+ * Maps movie information from database record into entity.
+ */
 object MovieMapper : Function1<MovieRecord, Movie> {
   override fun invoke(movieRecord: MovieRecord) = Movie(
     movieRecord.posterPath ?: "", movieRecord.adult ?: false,

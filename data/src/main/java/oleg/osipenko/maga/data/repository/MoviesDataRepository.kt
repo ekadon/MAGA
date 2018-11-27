@@ -21,6 +21,9 @@ import retrofit2.HttpException
 import timber.log.Timber
 import java.net.UnknownHostException
 
+/**
+ * Implementation of [MoviesRepository].
+ */
 class MoviesDataRepository(
     private val db: MoviesDb, private val api: TMDBApi
 ) : MoviesRepository {

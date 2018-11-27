@@ -4,7 +4,10 @@ import oleg.osipenko.maga.data.entities.MovieRecord
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
 
-inline fun upcomingDateFilter(
+/**
+ * Filters movies inside Upcoming feed. Leaves only unreleased movies.
+ */
+fun upcomingDateFilter(
   currentDate: LocalDate, movieRecord: MovieRecord
 ): Boolean {
   val movieDate = LocalDate.parse(movieRecord.releaseDate)
