@@ -9,7 +9,20 @@ import oleg.osipenko.domain.entities.Movie
  */
 class NowPlayingAdapter(activity: AppCompatActivity) :
   FragmentStatePagerAdapter(activity.supportFragmentManager) {
+
   private val movies: MutableList<Movie> = ArrayList()
+  @Suppress("LateinitUsage")
+  private lateinit var baseUrl: String
+  @Suppress("LateinitUsage")
+  private lateinit var posterSizes: List<String>
+
+  /**
+   * Sets the configuration required for displaying images.
+   */
+  fun setConfiguration(baseUrl: String?, posterSizes: List<String>?) {
+    this.baseUrl = baseUrl ?: ""
+    this.posterSizes = posterSizes ?: emptyList()
+  }
 
   /**
    * Sets the content to display using this adapter.
@@ -26,8 +39,13 @@ class NowPlayingAdapter(activity: AppCompatActivity) :
 
   override fun getItem(position: Int) =
     movies[getMoviePosition(position)].let { movie ->
-      NowPlayingFragment.newInstance(movie.posterPath, movie.title)
+      NowPlayingFragment.newInstance(movie.posterPath, baseUrl, posterSizes)
     }
 
+  override fun getPageTitle(position: Int): CharSequence? {
+    return movies[getMoviePosition(position)].title
+  }
+
   private fun getMoviePosition(pagerPosition: Int) = pagerPosition % movies.size
+
 }

@@ -6,8 +6,8 @@
   android:id="@+id/drawer"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:openDrawer="start"
   tools:context="oleg.osipenko.maga.mainactivity.MainActivity"
+  tools:openDrawer="start"
   >
 
   <android.support.constraint.ConstraintLayout
@@ -25,6 +25,27 @@
       android:paddingRight="@dimen/margin_material"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+    <TextView
+      android:id="@+id/movie_title"
+      android:layout_width="0dp"
+      android:layout_height="48dp"
+      android:ellipsize="end"
+      android:fontFamily="sans-serif-condensed"
+      android:gravity="center_vertical"
+      android:maxLines="1"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/text_size_1"
+      android:visibility="visible"
+      tools:ignore="RtlSymmetry"
+      tools:text="@string/title_now_playing"
+      android:paddingLeft="@dimen/margin_material"
+      android:paddingRight="@dimen/margin_material"
+      app:layout_constraintBottom_toBottomOf="@id/pager_now_playing"
+      app:layout_constraintLeft_toLeftOf="@id/pager_now_playing"
+      app:layout_constraintRight_toRightOf="@id/pager_now_playing"
       />
 
     <ImageView
@@ -73,12 +94,12 @@
       android:layout_width="0dp"
       android:layout_height="?attr/actionBarSize"
       android:background="@android:color/transparent"
+      android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      tools:title="title"
       app:titleTextColor="@android:color/white"
-      android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+      tools:title="title"
       />
 
     <ProgressBar
@@ -94,14 +115,14 @@
       />
 
   </android.support.constraint.ConstraintLayout>
-  
+
   <android.support.design.widget.NavigationView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    app:menu="@menu/navigation"
-    app:itemTextColor="@android:color/white"
     app:headerLayout="@layout/header_navigation"
+    app:itemTextColor="@android:color/white"
+    app:menu="@menu/navigation"
     />
 
 </android.support.v4.widget.DrawerLayout>
