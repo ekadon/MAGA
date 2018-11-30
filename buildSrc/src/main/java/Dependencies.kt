@@ -1,5 +1,5 @@
 object Versions {
-  val androidPlugin = "3.3.0-beta04"
+  val androidPlugin = "3.3.0-rc01"
   val kotlin = "1.3.0"
   val appCompat = "28.0.0"
   val glide = "4.8.0"
@@ -15,6 +15,7 @@ object Versions {
   val coroutinesAdapter = "0.9.2"
   val coroutines = "1.0.0"
   val timber = "4.7.1"
+  val navigation = "1.0.0-alpha07"
 
   val junit = "4.12"
   val mockitoKotlin = "1.5.0"
@@ -28,6 +29,7 @@ object Versions {
 object GradlePlugins {
   val android = "com.android.tools.build:gradle:${Versions.androidPlugin}"
   val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+  val safeArgs = "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
 }
 
 object CoreDependencies {
@@ -50,6 +52,8 @@ object UiDependencies {
   val dataBinding = "com.android.databinding:compiler:${Versions.androidPlugin}"
   val design = "com.android.support:design:${Versions.appCompat}"
   val circleImageView = "de.hdodenhof:circleimageview:${Versions.circleImageView}"
+  val navigation = "android.arch.navigation:navigation-fragment-ktx:${Versions.navigation}"
+  val navigationUi = "android.arch.navigation:navigation-ui-ktx:${Versions.navigation}"
 }
 
 object TvDependencies {

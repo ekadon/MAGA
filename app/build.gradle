@@ -3,6 +3,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: '../quality/detekt.gradle'
+apply plugin: "androidx.navigation.safeargs"
 
 android {
   compileSdkVersion 28
@@ -55,6 +56,8 @@ dependencies {
   implementation CoreDependencies.koinScope
   implementation UiDependencies.circleImageView
   implementation CoreDependencies.timber
+  implementation UiDependencies.navigation
+  implementation UiDependencies.navigationUi
 
   implementation(ArchitectureComponents.lifecycle) {
     exclude group: androidGroup
