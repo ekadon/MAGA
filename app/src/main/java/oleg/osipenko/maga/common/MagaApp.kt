@@ -5,7 +5,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import oleg.osipenko.maga.data.di.dataModule
-import oleg.osipenko.maga.mainactivity.MainActivity
+import oleg.osipenko.maga.mainactivity.MainFragment
 import org.koin.android.ext.android.startKoin
 import timber.log.Timber
 
@@ -21,6 +21,6 @@ class MagaApp : Application() {
     }
     Timber.plant(Timber.DebugTree())
 
-    startKoin(this, listOf(dataModule, MainActivity.activityModule))
+    startKoin(this, listOf(dataModule, MainFragment.mainFragmentModule))
   }
 }

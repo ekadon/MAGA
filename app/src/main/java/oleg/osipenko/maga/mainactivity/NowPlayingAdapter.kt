@@ -1,14 +1,14 @@
 package oleg.osipenko.maga.mainactivity
 
+import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v7.app.AppCompatActivity
 import oleg.osipenko.domain.entities.Movie
 
 /**
  * Adapter for displaying Now Playing feed.
  */
-class NowPlayingAdapter(activity: AppCompatActivity) :
-  FragmentStatePagerAdapter(activity.supportFragmentManager) {
+class NowPlayingAdapter(fm: FragmentManager) :
+  FragmentStatePagerAdapter(fm) {
 
   private val movies: MutableList<Movie> = ArrayList()
   @Suppress("LateinitUsage")
@@ -42,9 +42,8 @@ class NowPlayingAdapter(activity: AppCompatActivity) :
       NowPlayingFragment.newInstance(movie.posterPath, baseUrl, posterSizes)
     }
 
-  override fun getPageTitle(position: Int): CharSequence? {
-    return movies[getMoviePosition(position)].title
-  }
+  override fun getPageTitle(position: Int): CharSequence? =
+    movies[getMoviePosition(position)].title
 
   private fun getMoviePosition(pagerPosition: Int) = pagerPosition % movies.size
 

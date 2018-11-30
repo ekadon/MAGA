@@ -12,8 +12,8 @@ import android.view.View
  */
 class ComingSoonMarginItemDecoration(private val pixels: Int) :
   RecyclerView.ItemDecoration() {
-  constructor(context: Context, @DimenRes id: Int) : this(
-    context.resources.getDimensionPixelSize(id)
+  constructor(context: Context?, @DimenRes id: Int) : this(
+    context?.resources?.getDimensionPixelSize(id) ?: 0
   )
 
   override fun getItemOffsets(
