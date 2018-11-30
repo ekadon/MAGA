@@ -1,55 +1,62 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
+apply from: '../quality/detekt.gradle'
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
-    compileSdkVersion 28
+  compileSdkVersion 28
 
-    defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
-        }
-        buildConfigField "String", "API_KEY", '"' + properties.getProperty('movie_db_api_key') + '"'
+  defaultConfig {
+    minSdkVersion 19
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0"
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+      }
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+    buildConfigField "String", "API_KEY", '"' + properties.getProperty('movie_db_api_key') + '"'
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    lintOptions {
-        abortOnError false
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':domain')
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation project(':domain')
 
-    def androidGroup = 'com.android.support'
+  def androidGroup = 'com.android.support'
 
-    implementation CoreDependencies.kotlin
-    implementation DataDependencies.retrofit
-    implementation DataDependencies.retrofitGson
-    implementation DataDependencies.logger
-    implementation CoreDependencies.threeten
-    implementation CoreDependencies.koin
-    implementation(ArchitectureComponents.lifecycle) { exclude group: androidGroup }
-    kapt ArchitectureComponents.lifeCycleCompiler
-    implementation DataDependencies.room
-    kapt DataDependencies.roomCompiler
-    implementation(DataDependencies.paging) { exclude group: androidGroup }
+  implementation CoreDependencies.kotlin
+  implementation CoreDependencies.coroutines
+  implementation CoreDependencies.coroutinesAndroid
+  implementation DataDependencies.retrofit
+  implementation DataDependencies.coroutinesAdapter
+  implementation DataDependencies.retrofitGson
+  implementation DataDependencies.logger
+  implementation CoreDependencies.threeten
+  implementation CoreDependencies.koin
+  implementation(ArchitectureComponents.lifecycle) {
+    exclude group: androidGroup
+  }
+  kapt ArchitectureComponents.lifeCycleCompiler
+  implementation DataDependencies.room
+  kapt DataDependencies.roomCompiler
+  implementation(DataDependencies.paging) { exclude group: androidGroup }
+  implementation CoreDependencies.timber
 }

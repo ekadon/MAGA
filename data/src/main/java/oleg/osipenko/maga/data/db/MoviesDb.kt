@@ -6,43 +6,61 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import oleg.osipenko.maga.data.db.MoviesDb.Companion.DB_VERSION
-import oleg.osipenko.maga.data.db.dao.*
-import oleg.osipenko.maga.data.entities.*
+import oleg.osipenko.maga.data.db.dao.ConfigurationDao
+import oleg.osipenko.maga.data.db.dao.GenresDao
+import oleg.osipenko.maga.data.db.dao.MovieGenresDao
+import oleg.osipenko.maga.data.db.dao.MoviesDao
+import oleg.osipenko.maga.data.db.dao.NowPlayingDao
+import oleg.osipenko.maga.data.db.dao.UpcomingDao
+import oleg.osipenko.maga.data.entities.ConfigurationRecord
+import oleg.osipenko.maga.data.entities.GenreRecord
+import oleg.osipenko.maga.data.entities.MovieGenreRecord
+import oleg.osipenko.maga.data.entities.MovieRecord
+import oleg.osipenko.maga.data.entities.NowPlaying
+import oleg.osipenko.maga.data.entities.Upcoming
 
 /**
- * Persistence database
+ * Persistence database.
  */
 @Database(
-        entities = [ConfigurationRecord::class,
-            MovieRecord::class,
-            GenreRecord::class,
-            MovieGenreRecord::class,
-            NowPlaying::class,
-            Upcoming::class],
-        version = DB_VERSION
+  entities = [
+    ConfigurationRecord::class,
+    MovieRecord::class,
+    GenreRecord::class,
+    MovieGenreRecord::class,
+    NowPlaying::class,
+    Upcoming::class],
+  version = DB_VERSION
 )
 @TypeConverters(oleg.osipenko.maga.data.db.TypeConverters::class)
 abstract class MoviesDb : RoomDatabase() {
-    abstract fun nowPlayingDao(): NowPlayingDao
-    abstract fun moviesDao(): MoviesDao
-    abstract fun genresDao(): GenresDao
-    abstract fun movieGenresDao(): MovieGenresDao
-    abstract fun configDao(): ConfigurationDao
-    abstract fun upcomingDao(): UpcomingDao
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun nowPlayingDao(): NowPlayingDao
 
-    companion object {
-        /**
-         * MoviesDb version
-         */
-        const val DB_VERSION = 1
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun moviesDao(): MoviesDao
 
-        /**
-         * MoviesDb name
-         */
-        private const val DB_NAME = "maga"
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun genresDao(): GenresDao
 
-        fun create(context: Context): MoviesDb {
-            return Room.databaseBuilder(context, MoviesDb::class.java, DB_NAME).build()
-        }
-    }
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun movieGenresDao(): MovieGenresDao
+
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun configDao(): ConfigurationDao
+
+  @Suppress("UndocumentedPublicFunction")
+  abstract fun upcomingDao(): UpcomingDao
+
+  companion object {
+    internal const val DB_VERSION = 1
+
+    private const val DB_NAME = "maga"
+
+    /**
+     * Factory method.
+     */
+    fun create(context: Context): MoviesDb =
+      Room.databaseBuilder(context, MoviesDb::class.java, DB_NAME).build()
+  }
 }

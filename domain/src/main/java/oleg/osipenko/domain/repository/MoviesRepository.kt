@@ -1,26 +1,19 @@
 package oleg.osipenko.domain.repository
 
-import android.arch.lifecycle.LiveData
-import oleg.osipenko.domain.entities.Configuration
 import oleg.osipenko.domain.entities.Movie
-import oleg.osipenko.domain.states.MoviesDataState
+import oleg.osipenko.domain.states.DataState
 
 /**
- * Entry point to the data layer
+ * Entry point to the movies data layer.
  */
 interface MoviesRepository {
-    /**
-     * Returns Now playing movies
-     */
-    fun nowPlaying(): MoviesDataState<List<Movie>>
+  /**
+   * Returns Now playing movies.
+   */
+  fun nowPlaying(): DataState<List<Movie>>
 
-    /**
-     * Returns Coming soon movies
-     */
-    fun comingSoon(): MoviesDataState<List<Movie>>
-
-    /**
-     * Returns the API configuration object
-     */
-    fun configuration(): LiveData<Configuration>
+  /**
+   * Returns Coming soon movies.
+   */
+  fun comingSoon(): DataState<List<Movie>>
 }

@@ -15,11 +15,12 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface ConfigurationDao {
 
-    @Insert(onConflict = REPLACE) void insertConfiguration(ConfigurationRecord configuration);
+  @Insert(onConflict = REPLACE)
+  void insertConfiguration(ConfigurationRecord configuration);
 
-    @Query("SELECT * FROM config")
-    LiveData<ConfigurationRecord> getConfiguration();
+  @Query("SELECT * FROM config")
+  LiveData<ConfigurationRecord> getConfiguration();
 
-    @Query("DELETE FROM config")
-    void deleteAll();
+  @Query("DELETE FROM config")
+  void deleteAll();
 }

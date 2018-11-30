@@ -1,29 +1,51 @@
 package oleg.osipenko.maga.mainactivity
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v7.app.AppCompatActivity
 import oleg.osipenko.domain.entities.Movie
 
-class NowPlayingAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
-    private val movies: MutableList<Movie> = ArrayList()
+/**
+ * Adapter for displaying Now Playing feed.
+ */
+class NowPlayingAdapter(activity: AppCompatActivity) :
+  FragmentStatePagerAdapter(activity.supportFragmentManager) {
 
-    fun setMovies(nowPlaying: List<Movie>?) {
-        nowPlaying?.let {
-            movies.clear()
-            movies.addAll(nowPlaying)
-            notifyDataSetChanged()
-        }
+  private val movies: MutableList<Movie> = ArrayList()
+  @Suppress("LateinitUsage")
+  private lateinit var baseUrl: String
+  @Suppress("LateinitUsage")
+  private lateinit var posterSizes: List<String>
+
+  /**
+   * Sets the configuration required for displaying images.
+   */
+  fun setConfiguration(baseUrl: String?, posterSizes: List<String>?) {
+    this.baseUrl = baseUrl ?: ""
+    this.posterSizes = posterSizes ?: emptyList()
+  }
+
+  /**
+   * Sets the content to display using this adapter.
+   */
+  fun setMovies(nowPlaying: List<Movie>?) {
+    nowPlaying?.let {
+      movies.clear()
+      movies.addAll(nowPlaying)
+      notifyDataSetChanged()
+    }
+  }
+
+  override fun getCount() = if (movies.isEmpty()) 0 else Int.MAX_VALUE
+
+  override fun getItem(position: Int) =
+    movies[getMoviePosition(position)].let { movie ->
+      NowPlayingFragment.newInstance(movie.posterPath, baseUrl, posterSizes)
     }
 
-    override fun getCount() = if (movies.isEmpty()) 0 else Int.MAX_VALUE
+  override fun getPageTitle(position: Int): CharSequence? {
+    return movies[getMoviePosition(position)].title
+  }
 
-    override fun getItem(position: Int): Fragment {
-        val movie = movies[getMoviePosition(position)]
-        return NowPlayingFragment.newInstance(movie.posterPath, movie.title)
-    }
+  private fun getMoviePosition(pagerPosition: Int) = pagerPosition % movies.size
 
-    private fun getMoviePosition(pagerPosition: Int): Int {
-        return pagerPosition % movies.size
-    }
 }

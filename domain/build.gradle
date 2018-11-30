@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
+apply from: '../quality/detekt.gradle'
 
 android {
     compileSdkVersion 28
