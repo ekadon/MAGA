@@ -11,7 +11,7 @@ import oleg.osipenko.domain.states.Status
 /**
  * View model for [MainActivity].
  */
-class MainActivityViewModel(
+class MainFragmentViewModel(
     moviesRepository: MoviesRepository, configRepository: ConfigRepository
 ) : ViewModel() {
 
