@@ -63,7 +63,22 @@ class MainFragment: Fragment() {
   private fun initViews() {
     initComingSoon()
     initNowPlaying()
-    setToolbarAndInsets()
+
+
+    @Suppress("UnsafeCast")
+    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+      getStatusBarHeight()
+  }
+
+  private fun getStatusBarHeight(): Int {
+    val resourceId =
+      resources.getIdentifier("status_bar_height", "dimen", "android")
+
+    return if (resourceId > 0) {
+      resources.getDimensionPixelSize(resourceId)
+    } else {
+      resources.getDimensionPixelSize(R.dimen.height_status_bar)
+    }
   }
 
   private fun initComingSoon() {
@@ -81,28 +96,6 @@ class MainFragment: Fragment() {
   private fun initNowPlaying() {
     pager_now_playing.adapter = nowPlayingAdapter
     pager_now_playing.clipToPadding = false
-  }
-
-  private fun setToolbarAndInsets() {
-    @Suppress("UnsafeCast")
-    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-      getStatusBarHeight()
-    @Suppress("UnsafeCast")
-    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-      getStatusBarHeight()
-
-    toolbar.setTitle(R.string.title_now_playing)
-  }
-
-  private fun getStatusBarHeight(): Int {
-    val resourceId =
-      resources.getIdentifier("status_bar_height", "dimen", "android")
-
-    return if (resourceId > 0) {
-      resources.getDimensionPixelSize(resourceId)
-    } else {
-      resources.getDimensionPixelSize(R.dimen.height_status_bar)
-    }
   }
 
   private fun loadConfig() {
