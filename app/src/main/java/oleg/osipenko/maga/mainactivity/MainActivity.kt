@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import kotlinx.android.synthetic.main.activity_main.*
 import oleg.osipenko.maga.R
 
@@ -17,12 +21,35 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
+    initViews()
+  }
+
+  private fun initViews() {
     window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-    if (supportFragmentManager.findFragmentById(R.id.container_main) == null) {
-      supportFragmentManager.beginTransaction()
-        .add(R.id.container_main, MainFragment())
-        .commit()
+    @Suppress("UnsafeCast")
+    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+      getStatusBarHeight()
+
+    setSupportActionBar(toolbar)
+    val navController = findNavController(R.id.fragment_nav_host)
+    val appBarConfig = AppBarConfiguration(navController.graph)
+    setupActionBarWithNavController(navController, appBarConfig)
+
+    supportActionBar?.apply {
+      setDisplayHomeAsUpEnabled(true)
+      setHomeAsUpIndicator(R.drawable.ic_kebab)
+    }
+  }
+
+  private fun getStatusBarHeight(): Int {
+    val resourceId =
+      resources.getIdentifier("status_bar_height", "dimen", "androsid")
+
+    return if (resourceId > 0) {
+      resources.getDimensionPixelSize(resourceId)
+    } else {
+      resources.getDimensionPixelSize(R.dimen.height_status_bar)
     }
   }
 

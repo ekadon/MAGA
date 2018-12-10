@@ -11,10 +11,31 @@
   >
 
   <FrameLayout
-    android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    />
+    >
+
+    <fragment
+      android:id="@+id/fragment_nav_host"
+      android:name="androidx.navigation.fragment.NavHostFragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:defaultNavHost="true"
+      app:navGraph="@navigation/nav_graph"
+      />
+
+    <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:background="@android:color/transparent"
+      android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+      app:titleTextColor="@android:color/white"
+      tools:title="title"
+      android:layout_gravity="top"
+      />
+
+  </FrameLayout>
 
   <android.support.design.widget.NavigationView
     android:layout_width="match_parent"

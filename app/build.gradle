@@ -44,8 +44,7 @@ dependencies {
   implementation CoreDependencies.coroutines
   implementation CoreDependencies.coroutinesAndroid
   implementation UiDependencies.appCompat
-  implementation(UiDependencies.glide) { exclude group: androidGroup }
-  kapt UiDependencies.glideCompiler
+  implementation UiDependencies.picasso
   implementation UiDependencies.constraintLayout
   implementation UiDependencies.recyclerView
   //kapt UiDependencies.dataBinding
@@ -62,5 +61,6 @@ dependencies {
   implementation(ArchitectureComponents.lifecycle) {
     exclude group: androidGroup
   }
+  implementation UiDependencies.support
   kapt ArchitectureComponents.lifeCycleCompiler
 }

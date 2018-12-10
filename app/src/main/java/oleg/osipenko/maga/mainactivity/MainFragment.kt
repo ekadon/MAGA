@@ -12,13 +12,10 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import kotlinx.android.synthetic.main.fragment_main.*
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.maga.R
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.core.parameter.parametersOf
@@ -33,16 +30,12 @@ class MainFragment: Fragment() {
     val mainFragmentModule = module {
       viewModel { MainFragmentViewModel(get(), get()) }
 
-      single { Glide.with(androidContext()) }
-
       single<DiffUtil.ItemCallback<Movie>> {
         ComingSoonAdapter.MovieDiffCallback()
       }
 
       factory {
-        @Suppress("UnsafeCast") ComingSoonAdapter(
-          get() as RequestManager, get() as DiffUtil.ItemCallback<Movie>
-        )
+        @Suppress("UnsafeCast") ComingSoonAdapter(get())
       }
 
       factory { (fm: FragmentManager) -> NowPlayingAdapter(fm) }
@@ -70,7 +63,22 @@ class MainFragment: Fragment() {
   private fun initViews() {
     initComingSoon()
     initNowPlaying()
-    setToolbarAndInsets()
+
+
+    @Suppress("UnsafeCast")
+    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+      getStatusBarHeight()
+  }
+
+  private fun getStatusBarHeight(): Int {
+    val resourceId =
+      resources.getIdentifier("status_bar_height", "dimen", "android")
+
+    return if (resourceId > 0) {
+      resources.getDimensionPixelSize(resourceId)
+    } else {
+      resources.getDimensionPixelSize(R.dimen.height_status_bar)
+    }
   }
 
   private fun initComingSoon() {
@@ -88,28 +96,6 @@ class MainFragment: Fragment() {
   private fun initNowPlaying() {
     pager_now_playing.adapter = nowPlayingAdapter
     pager_now_playing.clipToPadding = false
-  }
-
-  private fun setToolbarAndInsets() {
-    @Suppress("UnsafeCast")
-    (toolbar?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-      getStatusBarHeight()
-    @Suppress("UnsafeCast")
-    (shader?.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-      getStatusBarHeight()
-
-    toolbar.setTitle(R.string.title_now_playing)
-  }
-
-  private fun getStatusBarHeight(): Int {
-    val resourceId =
-      resources.getIdentifier("status_bar_height", "dimen", "android")
-
-    return if (resourceId > 0) {
-      resources.getDimensionPixelSize(resourceId)
-    } else {
-      resources.getDimensionPixelSize(R.dimen.height_status_bar)
-    }
   }
 
   private fun loadConfig() {
