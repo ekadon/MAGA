@@ -61,5 +61,6 @@ dependencies {
   implementation(ArchitectureComponents.lifecycle) {
     exclude group: androidGroup
   }
+  implementation UiDependencies.support
   kapt ArchitectureComponents.lifeCycleCompiler
 }

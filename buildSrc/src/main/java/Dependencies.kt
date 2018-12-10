@@ -1,5 +1,5 @@
 object Versions {
-  val androidPlugin = "3.3.0-rc01"
+  val androidPlugin = "3.3.0-rc02"
   val kotlin = "1.3.0"
   val appCompat = "28.0.0"
   val retrofit = "2.4.0"
@@ -45,6 +45,7 @@ object CoreDependencies {
 
 object UiDependencies {
   val appCompat = "com.android.support:appcompat-v7:${Versions.appCompat}"
+  val support = "com.android.support:support-v4:${Versions.appCompat}"
   val constraintLayout = "com.android.support.constraint:constraint-layout:${Versions.constraintLayout}"
   val recyclerView = "com.android.support:recyclerview-v7:${Versions.appCompat}"
   val picasso = "com.squareup.picasso:picasso:${Versions.picasso}"
