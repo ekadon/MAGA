@@ -3,7 +3,28 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
   <group android:checkableBehavior="single">
     <item
-      android:id="@+id/main"
-      android:title="main"/>
+      android:id="@+id/menu_main"
+      android:title="@string/menu_home"/>
+    <item
+      android:id="@+id/menu_movies"
+      android:title="@string/menu_movies"/>
+    <item
+      android:id="@+id/menu_tv_shows"
+      android:title="@string/menu_tv_shows"/>
+    <item
+      android:id="@+id/menu_actors"
+      android:title="@string/menu_actors"/>
+    <item
+      android:id="@+id/menu_calendar"
+      android:title="@string/menu_calendar"/>
+    <item
+      android:id="@+id/menu_nearby"
+      android:title="@string/menu_nearby"/>
+  </group>
+  <group
+    android:id="@+id/xxx">
+      <item
+        android:id="@+id/menu_settings"
+        android:title="@string/menu_settings"/>
   </group>
 </menu>
