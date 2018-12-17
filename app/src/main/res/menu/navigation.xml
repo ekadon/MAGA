@@ -4,27 +4,35 @@
   <group android:checkableBehavior="single">
     <item
       android:id="@+id/menu_main"
+      android:icon="@drawable/ic_home"
+      android:checked="true"
       android:title="@string/menu_home"/>
     <item
       android:id="@+id/menu_movies"
+      android:icon="@drawable/ic_movies"
       android:title="@string/menu_movies"/>
     <item
       android:id="@+id/menu_tv_shows"
+      android:icon="@drawable/ic_tvshows"
       android:title="@string/menu_tv_shows"/>
     <item
       android:id="@+id/menu_actors"
+      android:icon="@drawable/ic_actors"
       android:title="@string/menu_actors"/>
     <item
       android:id="@+id/menu_calendar"
+      android:icon="@drawable/ic_calendar"
       android:title="@string/menu_calendar"/>
     <item
       android:id="@+id/menu_nearby"
+      android:icon="@drawable/ic_cinemas"
       android:title="@string/menu_nearby"/>
   </group>
   <group
     android:id="@+id/xxx">
       <item
         android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings"
         android:title="@string/menu_settings"/>
   </group>
 </menu>
