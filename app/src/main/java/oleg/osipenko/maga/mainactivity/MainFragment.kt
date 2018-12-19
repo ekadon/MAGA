@@ -46,7 +46,7 @@ class MainFragment: Fragment() {
   private val nowPlayingAdapter: NowPlayingAdapter by inject {
     parametersOf(this@MainFragment.childFragmentManager)
   }
-  private val fragmentViewModel: MainFragmentViewModel by viewModel()
+  private val fragmentVm: MainFragmentViewModel by viewModel()
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -99,7 +99,7 @@ class MainFragment: Fragment() {
   }
 
   private fun loadConfig() {
-    fragmentViewModel.configObservable.observe(this, Observer { config ->
+    fragmentVm.configObservable.observe(viewLifecycleOwner, Observer { config ->
       comingSoonAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
       nowPlayingAdapter.setConfiguration(config?.baseUrl, config?.posterSizes)
       startObservingMovies()
@@ -113,7 +113,7 @@ class MainFragment: Fragment() {
   }
 
   private fun observeNowPlaying() {
-    fragmentViewModel.nowPlayingMovies.observe(this, Observer {
+    fragmentVm.nowPlayingMovies.observe(viewLifecycleOwner, Observer {
       nowPlayingAdapter.setMovies(it)
       if (it?.isNotEmpty() == true) {
         val startIndex = it.size * INFINITE_SIZE_MULTIPLIER
@@ -144,14 +144,14 @@ class MainFragment: Fragment() {
         }
       }
     })
-    fragmentViewModel.nowPlayingErrorMessage.observe(this, errorObserver)
+    fragmentVm.nowPlayingErrorMessage.observe(viewLifecycleOwner, errorObserver)
   }
 
   private fun observeComingSoon() {
-    fragmentViewModel.comingSoonMovies.observe(this, Observer {
+    fragmentVm.comingSoonMovies.observe(viewLifecycleOwner, Observer {
       comingSoonAdapter.submitList(it)
     })
-    fragmentViewModel.comingSoonErrorMessage.observe(this, errorObserver)
+    fragmentVm.comingSoonErrorMessage.observe(viewLifecycleOwner, errorObserver)
   }
 
   private val errorObserver = Observer<String?> {
@@ -162,7 +162,7 @@ class MainFragment: Fragment() {
   }
 
   private fun observeNowPlayingProgress() {
-    fragmentViewModel.nowPlayingShowProgressBar.observe(this, Observer {
+    fragmentVm.nowPlayingShowProgressBar.observe(viewLifecycleOwner, Observer {
       progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
     })
   }

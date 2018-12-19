@@ -1,5 +1,16 @@
 <resources>
   <string name="app_name">MAGA</string>
+
+  <!-- Home screen -->
   <string name="title_now_playing">NOW PLAYING</string>
   <string name="title_coming_soon">Coming soon</string>
+
+  <!-- Navigation Menu items -->
+  <string name="menu_home">Home</string>
+  <string name="menu_settings">Settings</string>
+  <string name="menu_nearby">Cinemas nearby</string>
+  <string name="menu_calendar">Calendar</string>
+  <string name="menu_actors">Actors</string>
+  <string name="menu_tv_shows">TV shows</string>
+  <string name="menu_movies">Movies</string>
 </resources>
