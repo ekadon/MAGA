@@ -10,6 +10,9 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -21,6 +24,9 @@ import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module.module
 
+/**
+ * Content of the main screen.
+ */
 class MainFragment: Fragment() {
 
   companion object {
@@ -47,6 +53,11 @@ class MainFragment: Fragment() {
     parametersOf(this@MainFragment.childFragmentManager)
   }
   private val fragmentVm: MainFragmentViewModel by viewModel()
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setHasOptionsMenu(true)
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -166,4 +177,11 @@ class MainFragment: Fragment() {
       progressbar.visibility = if (it == true) View.VISIBLE else View.GONE
     })
   }
+
+  override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    inflater?.inflate(R.menu.options_main, menu)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem?): Boolean =
+    super.onOptionsItemSelected(item)
 }

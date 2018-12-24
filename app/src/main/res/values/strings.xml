@@ -13,4 +13,6 @@
   <string name="menu_actors">Actors</string>
   <string name="menu_tv_shows">TV shows</string>
   <string name="menu_movies">Movies</string>
+  <string name="ic_action_search">action search</string>
+  <string name="overflow">never</string>
 </resources>

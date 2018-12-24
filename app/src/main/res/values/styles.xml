@@ -8,6 +8,7 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:windowBackground">@color/colorWindowBackground</item>
     <item name="android:fontFamily">sans</item>
+    <item name="android:textColorSecondary">@android:color/white</item>
   </style>
 
   <style name="LinearProgress" parent="Theme.AppCompat.Light">
@@ -22,7 +23,10 @@
     <!-- selected menu item icon color -->
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="android:textColorPrimary">@color/colorMenuItemInactive</item>
+  </style>
 
+  <style name="Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+    <item name="colorControlNormal">@android:color/white</item>
   </style>
 
 </resources>
