@@ -6,10 +6,10 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_coming_soon.view.*
 import oleg.osipenko.domain.entities.Movie
 import oleg.osipenko.maga.R
+import oleg.osipenko.maga.common.ImageLoader
 
 /**
  * Adapter for displaying Coming Soon feed.
@@ -57,11 +57,11 @@ class ComingSoonAdapter(
      */
     fun bind(url: String) {
       if (!TextUtils.isEmpty(baseUrl) && sizes.isNotEmpty()) {
-        Picasso.get()
-          .load(getImageUrl(url))
-          .placeholder(android.R.color.darker_gray)
-          .error(R.drawable.placeholder)
-          .into(itemView.poster)
+        ImageLoader.get().loadImage(
+          itemView.poster,
+          getImageUrl(url),
+          android.R.color.darker_gray
+        )
       }
     }
   }
