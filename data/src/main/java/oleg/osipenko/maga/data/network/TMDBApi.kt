@@ -11,6 +11,7 @@ import oleg.osipenko.maga.data.BuildConfig
 import oleg.osipenko.maga.data.network.dto.ApiConfigurationResponse
 import oleg.osipenko.maga.data.network.dto.GenresResponse
 import oleg.osipenko.maga.data.network.dto.MoviesResponse
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -84,11 +85,18 @@ interface TMDBApi {
   }
 
   /**
-   * Retrieves API configuration values
+   * Retrieves API configuration values.
    * https://developers.themoviedb.org/3/configuration/get-api-configuration
    */
   @GET("/3/configuration")
   fun getConfig(): Deferred<ApiConfigurationResponse>
+
+  /**
+   * Retrieves API configuration values.
+   * https://developers.themoviedb.org/3/configuration/get-api-configuration
+   */
+  @GET("/3/configuration")
+  fun getConfigCall(): Call<ApiConfigurationResponse>
 
   /**
    * Returns the list of movies now playing

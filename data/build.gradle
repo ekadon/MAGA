@@ -59,4 +59,5 @@ dependencies {
   kapt DataDependencies.roomCompiler
   implementation(DataDependencies.paging) { exclude group: androidGroup }
   implementation CoreDependencies.timber
+  implementation DataDependencies.workManager
 }
