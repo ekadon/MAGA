@@ -1,6 +1,5 @@
 package oleg.osipenko.maga.data.repository
 
-import android.annotation.TargetApi
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations
 import android.content.SharedPreferences
@@ -27,7 +26,7 @@ import retrofit2.Response
 import timber.log.Timber
 import java.io.IOException
 import java.net.UnknownHostException
-import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 /**
  * Implementation of [ConfigRepository].
@@ -41,7 +40,6 @@ class ConfigDataRepository(
   companion object {
     private const val CONFIG_LOADED = "is config loaded"
     private const val CONFIG_WORK = "config syncing"
-    private const val FLEX = 3L
     private const val INTERVAL = 5L
   }
 
@@ -108,20 +106,22 @@ class ConfigDataRepository(
       )
     }
 
-  @TargetApi(Build.VERSION_CODES.O)
   private fun scheduleConfigSyncWork() {
+
     val syncConstraints = Constraints.Builder()
       .setRequiresCharging(true)
-      .setRequiresDeviceIdle(true)
       .setRequiredNetworkType(NetworkType.UNMETERED)
-      .build()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      syncConstraints.setRequiresDeviceIdle(true)
+    }
 
     val configSyncWork = PeriodicWorkRequest.Builder(
       ConfigSyncWorker::class.java,
-      Duration.ofHours(FLEX),
-      Duration.ofDays(INTERVAL)
+      INTERVAL,
+      TimeUnit.DAYS
     )
-      .setConstraints(syncConstraints)
+      .setConstraints(syncConstraints.build())
       .build()
 
     WorkManager.getInstance().enqueueUniquePeriodicWork(
