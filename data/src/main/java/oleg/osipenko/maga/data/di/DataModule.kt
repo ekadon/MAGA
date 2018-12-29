@@ -16,5 +16,5 @@ val dataModule = module {
 
   single<MoviesRepository> { MoviesDataRepository(get(), get()) }
 
-  single<ConfigRepository> { ConfigDataRepository(get(), get()) }
+  single<ConfigRepository> { ConfigDataRepository(get(), get(), get()) }
 }

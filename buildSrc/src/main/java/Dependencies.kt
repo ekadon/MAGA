@@ -16,6 +16,7 @@ object Versions {
   val timber = "4.7.1"
   val navigation = "1.0.0-alpha07"
   val picasso = "2.71828"
+  val workManager = "1.0.0-beta01"
 
   val junit = "4.12"
   val mockitoKotlin = "1.5.0"
@@ -68,6 +69,7 @@ object DataDependencies {
   val logger = "com.squareup.okhttp3:logging-interceptor:${Versions.logger}"
   val paging = "android.arch.paging:runtime:${Versions.paging}"
   val coroutinesAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.coroutinesAdapter}"
+  val workManager = "android.arch.work:work-runtime:${Versions.workManager}"
 }
 
 object ArchitectureComponents {

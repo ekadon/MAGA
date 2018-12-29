@@ -47,9 +47,9 @@ class MoviesDataRepository(
         )
       }
     } catch (e: HttpException) {
-      Timber.e(e.message())
+      Timber.e(e)
     } catch (e: UnknownHostException) {
-      Timber.e(e.message)
+      Timber.e(e)
     }
   }
 

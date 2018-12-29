@@ -21,6 +21,9 @@ class MagaApp : Application() {
     }
     Timber.plant(Timber.DebugTree())
 
-    startKoin(this, listOf(dataModule, MainFragment.mainFragmentModule))
+    startKoin(this, listOf(
+      dataModule,
+      appModule,
+      MainFragment.mainFragmentModule))
   }
 }
