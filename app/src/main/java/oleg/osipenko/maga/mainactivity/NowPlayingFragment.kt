@@ -1,14 +1,11 @@
 package oleg.osipenko.maga.mainactivity
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.item_now_playing.*
 import oleg.osipenko.maga.R
-import oleg.osipenko.maga.common.ImageLoader
 
 /**
  * Fragment for displaying movie in the Now Playing feed.
@@ -50,10 +47,7 @@ class NowPlayingFragment : Fragment() {
       arguments?.getStringArray(POSTER_SIZES) ?: emptyArray<String>()
 
     if (!TextUtils.isEmpty(baseUrl) && posterSizes.isNotEmpty()) {
-      ImageLoader.get().loadImage(
-        movie_poster,
-        getImageUrl(baseUrl, url, posterSizes),
-        android.R.color.darker_gray)
+      movie_poster.imageUrl = getImageUrl(baseUrl, url, posterSizes)
     }
   }
 

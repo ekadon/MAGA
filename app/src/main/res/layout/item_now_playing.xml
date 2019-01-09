@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.constraint.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   >
 
-  <ImageView
+  <oleg.osipenko.maga.mainactivity.NowPlayingCoverView
     android:id="@+id/movie_poster"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
     android:background="@color/placeholder_background_color"
     android:scaleType="centerCrop"
     tools:src="@tools:sample/avatars"
@@ -17,20 +22,34 @@
 
   <View
     android:id="@+id/shadow"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
     android:background="@android:drawable/screen_background_dark_transparent"
     android:visibility="invisible"
     tools:visibility="visible"
     />
 
+  <android.support.constraint.Guideline
+    android:id="@+id/page"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintGuide_begin="@dimen/height_pager"
+    android:orientation="horizontal"
+    />
+
   <ImageView
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
     android:layout_height="48dp"
-    android:layout_gravity="bottom"
     android:alpha="0.6"
     android:background="@android:color/black"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="@id/page"
     tools:ignore="RtlSymmetry"
     />
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

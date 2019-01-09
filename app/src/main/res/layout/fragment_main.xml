@@ -12,7 +12,7 @@
   <android.support.v4.view.ViewPager
     android:id="@+id/pager_now_playing"
     android:layout_width="0dp"
-    android:layout_height="@dimen/height_pager"
+    android:layout_height="match_parent"
     android:layoutAnimation="@anim/item_now_playing_animation"
     android:paddingLeft="@dimen/margin_material"
     android:paddingRight="@dimen/margin_material"
@@ -20,6 +20,14 @@
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:background="@tools:sample/backgrounds/scenic"
+    />
+
+  <android.support.constraint.Guideline
+    android:id="@+id/page"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_begin="@dimen/height_pager"
     />
 
   <TextView
@@ -30,16 +38,16 @@
     android:fontFamily="sans-serif-condensed"
     android:gravity="center_vertical"
     android:maxLines="1"
+    android:paddingLeft="@dimen/margin_material"
+    android:paddingRight="@dimen/margin_material"
     android:textColor="@android:color/white"
     android:textSize="@dimen/text_size_1"
     android:visibility="visible"
-    tools:ignore="RtlSymmetry"
-    tools:text="@string/title_now_playing"
-    android:paddingLeft="@dimen/margin_material"
-    android:paddingRight="@dimen/margin_material"
-    app:layout_constraintBottom_toBottomOf="@id/pager_now_playing"
+    app:layout_constraintBottom_toBottomOf="@id/page"
     app:layout_constraintLeft_toLeftOf="@id/pager_now_playing"
     app:layout_constraintRight_toRightOf="@id/pager_now_playing"
+    tools:ignore="RtlSymmetry"
+    tools:text="@string/title_now_playing"
     />
 
   <ImageView
@@ -63,7 +71,7 @@
     android:textColor="@android:color/white"
     android:textSize="@dimen/text_size_2"
     app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/pager_now_playing"
+    app:layout_constraintTop_toBottomOf="@id/movie_title"
     tools:ignore="RtlSymmetry"
     />
 
@@ -80,19 +88,21 @@
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toBottomOf="@id/title_coming_soon"
-    tools:listitem="@layout/item_coming_soon"
     tools:background="@android:color/darker_gray"
+    tools:listitem="@layout/item_coming_soon"
+    android:visibility="invisible"
     />
 
   <ProgressBar
     android:id="@+id/progressbar"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:layout_marginTop="?attr/actionBarSize"
     android:indeterminate="true"
     android:visibility="gone"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/toolbar"
+    app:layout_constraintTop_toTopOf="parent"
     tools:visibility="visible"
     />
 
