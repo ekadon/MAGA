@@ -174,7 +174,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
+    active: false
     exceptionNames:
      - ArrayIndexOutOfBoundsException
      - Error

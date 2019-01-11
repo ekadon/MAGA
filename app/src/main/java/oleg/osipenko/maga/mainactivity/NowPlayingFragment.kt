@@ -1,10 +1,12 @@
 package oleg.osipenko.maga.mainactivity
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.item_now_playing.*
 import oleg.osipenko.maga.R
 
 /**
@@ -16,7 +18,6 @@ class NowPlayingFragment : Fragment() {
     private const val IMAGE_URL = "url.image"
     private const val BASE_URL = "url.base"
     private const val POSTER_SIZES = "sizes"
-    const val THUMBNAIL = 0.2f
 
     /**
      * Static factory method.
