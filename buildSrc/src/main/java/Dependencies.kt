@@ -1,5 +1,5 @@
 object Versions {
-  val androidPlugin = "3.3.0-rc03"
+  val androidPlugin = "3.3.0"
   val kotlin = "1.3.0"
   val appCompat = "28.0.0"
   val retrofit = "2.4.0"

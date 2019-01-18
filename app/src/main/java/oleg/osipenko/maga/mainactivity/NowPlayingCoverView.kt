@@ -36,16 +36,15 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     const val BLUR_RADIUS = 15f
     const val BLACK = -0x1000000
     const val TRANSPARENT = 0x00000000
-    const val SEMI_TRANSPARENT = -0x80000000
     const val RESIZE_FACTOR = 0.0625f
   }
 
   private val gradientPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-  private val oppositePaint = Paint(Paint.ANTI_ALIAS_FLAG)
   private val rect = Rect()
   private val rectF = RectF(rect)
   private val regularBitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
   private val blurredBitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
   var imageUrl: String = ""
     set(value) {
       field = value
@@ -55,7 +54,6 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
   private lateinit var cover: Bitmap
   @Suppress("LateinitUsage")
   private lateinit var blurredCover: Bitmap
-
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     val width = View.MeasureSpec.getSize(widthMeasureSpec)
@@ -79,28 +77,20 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
 
           launch(Dispatchers.Main) {
             // Get coordinates of the center-cropped cover
-            val croppedRect = getCropCoordinates()
+            val croppedRect: Rect = getCropCoordinates()
 
             cover = Bitmap.createScaledBitmap(
-              cover,
-              croppedRect.width(),
-              croppedRect.height(),
-              true
+              cover, croppedRect.width(), croppedRect.height(), true
             )
             cover = Bitmap.createBitmap(
-              cover,
-              croppedRect.left,
-              croppedRect.top,
-              rect.width(),
+              cover, croppedRect.left, croppedRect.top, rect.width(),
               rect.height()
             )
 
             // Create bitmap for blurred copy
             blurredCover = Bitmap.createBitmap(
-              croppedRect.width(),
-              croppedRect.height(),
-              Bitmap.Config.ARGB_8888)
-
+              cover.width, cover.height, Bitmap.Config.ARGB_8888
+            )
 
             // determine resized copy size for blur
             val resW = Math.round(rect.width() * RESIZE_FACTOR)
@@ -153,18 +143,10 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     gradientPaint.isDither = true
     gradientPaint.shader = gradientShader()
     gradientPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
-    oppositePaint.isDither = true
-    oppositePaint.shader = oppositeShader()
-    oppositePaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
   }
 
   private fun gradientShader(): Shader = LinearGradient(
-    rectF.left, rectF.top, rectF.left, rectF.bottom, BLACK, SEMI_TRANSPARENT,
-    Shader.TileMode.CLAMP
-  )
-
-  private fun oppositeShader(): Shader = LinearGradient(
-    rectF.left, rectF.top, rectF.left, rectF.bottom, TRANSPARENT, BLACK,
+    rectF.left, rectF.top, rectF.left, rectF.bottom, BLACK, TRANSPARENT,
     Shader.TileMode.CLAMP
   )
 
@@ -176,12 +158,14 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
 
     fun getWidthRatio(): Float = rect.width() / cover.width.toFloat()
 
-    val ratio = Math.max(getWidthRatio(), getHeightRatio())
+    val ratio: Float
 
-    if (cover.width > cover.height) {
+    if (getHeightRatio() > getWidthRatio()) {
+      ratio = getHeightRatio()
       desiredHeight = rect.height()
       desiredWidth = (cover.width * ratio).toInt()
     } else {
+      ratio = getWidthRatio()
       desiredWidth = rect.width()
       desiredHeight = (cover.height * ratio).toInt()
     }
@@ -196,7 +180,6 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     if (::cover.isInitialized) {
       canvas.drawBitmap(cover, 0f, 0f, regularBitmapPaint)
       if (::blurredCover.isInitialized) {
-        canvas.drawRect(rectF, oppositePaint)
         canvas.saveLayer(rectF, regularBitmapPaint)
         canvas.drawBitmap(blurredCover, 0f, 0f, blurredBitmapPaint)
         canvas.drawRect(rectF, gradientPaint)
