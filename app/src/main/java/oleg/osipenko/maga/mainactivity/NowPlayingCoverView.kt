@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.PorterDuff
@@ -49,8 +50,10 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
 
   var imageUrl: String = ""
     set(value) {
-      field = value
-      requestLayout()
+      if (value != field) {
+        field = value
+        requestLayout()
+      }
     }
 
   @Suppress("LateinitUsage")
@@ -126,6 +129,7 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
             resizeScript.forEach_bicubic(allocOut)
 
             allocOut.copyTo(blurredCover)
+            invalidate()
           }
 
         } catch (e: Exception) {
@@ -155,7 +159,7 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     TRANSPARENT, Shader.TileMode.CLAMP
   )
 
-  private fun getGradientStartTop(): Float = rectF.bottom/ GRADIENT_START
+  private fun getGradientStartTop(): Float = rectF.bottom / GRADIENT_START
 
   private fun oppositeShader(): Shader = LinearGradient(
     rectF.left, rectF.top, rectF.bottom, rectF.left, TRANSPARENT, BLACK,
@@ -199,7 +203,7 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
         canvas.restore()
       }
     } else {
-      super.onDraw(canvas)
+      canvas.drawColor(Color.RED)
     }
   }
 }
