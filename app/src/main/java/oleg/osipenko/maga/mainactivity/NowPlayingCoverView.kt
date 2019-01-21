@@ -37,9 +37,11 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     const val BLACK = -0x1000000
     const val TRANSPARENT = 0x00000000
     const val RESIZE_FACTOR = 0.0625f
+    const val GRADIENT_START = 3
   }
 
   private val gradientPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+  private val oppositePaint = Paint(Paint.ANTI_ALIAS_FLAG)
   private val rect = Rect()
   private val rectF = RectF(rect)
   private val regularBitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -50,6 +52,7 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
       field = value
       requestLayout()
     }
+
   @Suppress("LateinitUsage")
   private lateinit var cover: Bitmap
   @Suppress("LateinitUsage")
@@ -143,10 +146,19 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     gradientPaint.isDither = true
     gradientPaint.shader = gradientShader()
     gradientPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+    oppositePaint.isDither = true
+    oppositePaint.shader = oppositeShader()
   }
 
   private fun gradientShader(): Shader = LinearGradient(
-    rectF.left, rectF.top, rectF.left, rectF.bottom, BLACK, TRANSPARENT,
+    rectF.left, getGradientStartTop(), rectF.left, rectF.bottom, BLACK,
+    TRANSPARENT, Shader.TileMode.CLAMP
+  )
+
+  private fun getGradientStartTop(): Float = rectF.bottom/ GRADIENT_START
+
+  private fun oppositeShader(): Shader = LinearGradient(
+    rectF.left, rectF.top, rectF.bottom, rectF.left, TRANSPARENT, BLACK,
     Shader.TileMode.CLAMP
   )
 
@@ -180,6 +192,7 @@ class NowPlayingCoverView(context: Context?, attrs: AttributeSet?) :
     if (::cover.isInitialized) {
       canvas.drawBitmap(cover, 0f, 0f, regularBitmapPaint)
       if (::blurredCover.isInitialized) {
+        canvas.drawRect(rectF, oppositePaint)
         canvas.saveLayer(rectF, regularBitmapPaint)
         canvas.drawBitmap(blurredCover, 0f, 0f, blurredBitmapPaint)
         canvas.drawRect(rectF, gradientPaint)
